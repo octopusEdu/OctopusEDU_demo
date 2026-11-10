@@ -1,0 +1,1598 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Генератор презентаций PRO — Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&family=Montserrat:wght@400;600;800&family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600;700&family=PT+Sans:wght@400;700&family=Bebas+Neue&family=Oswald:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs/dist/pptxgen.bundle.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+<style>
+:root{--bg:#f0faf8;--surface:#fff;--card:#e6f5f2;--border:#b2ddd6;--teal:#0e9e88;--teal2:#0b7a6a;--glow:rgba(14,158,136,.1);--text:#12302b;--muted:#5a8a80;--orange:#f0ad4e;--red:#d9534f;--purple:#7c3aed}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;padding:2rem 1rem 5rem}
+.header{text-align:center;margin-bottom:2rem}
+.header h1{font-family:'Syne',sans-serif;font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:800;letter-spacing:-.02em}
+.header h1 span.accent{color:var(--teal)}
+.header p{color:var(--muted);font-size:.85rem;margin-top:.5rem}
+.layout{display:flex;gap:1.5rem;max-width:1600px;margin:0 auto;flex-wrap:wrap;align-items:flex-start}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:1.2rem;padding:1.5rem;box-shadow:0 4px 20px rgba(0,0,0,.04)}
+.left-panel{flex:1 1 420px;max-width:480px}
+.right-panel{flex:2 1 620px;display:flex;flex-direction:column}
+.panel-title{font-weight:700;font-size:.85rem;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:1rem}
+textarea,input[type=text],input[type=password],input[type=number],select{width:100%;border:1px solid var(--border);border-radius:.9rem;padding:.7rem 1rem;font-size:.85rem;font-family:inherit;background:var(--bg);color:var(--text);outline:none;resize:vertical}
+textarea:focus,input[type=text]:focus,input[type=password]:focus,input[type=number]:focus,select:focus{border-color:var(--teal);box-shadow:0 0 0 2px var(--glow)}
+.input-row{margin-bottom:.8rem}
+.input-row label{font-size:.75rem;font-weight:600;color:var(--muted);display:block;margin-bottom:.3rem}
+.two-col{display:flex;gap:.8rem}
+.two-col .input-row{flex:1}
+.color-picker{display:flex;align-items:center;gap:.5rem}
+.color-picker input[type=color]{width:46px;height:36px;border-radius:.6rem;border:1px solid var(--border);background:transparent;cursor:pointer;padding:2px}
+.color-picker input[type=text]{flex:1;font-family:monospace;text-transform:uppercase}
+.btn{padding:.7rem 1.4rem;border-radius:100px;font-weight:700;font-size:.85rem;cursor:pointer;border:none;background:var(--teal);color:#fff;width:100%;margin-top:1rem;transition:.15s}
+.btn:hover{background:var(--teal2)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn-sm{padding:.4rem 1rem;font-size:.76rem;font-weight:600;border-radius:100px;background:transparent;border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:.15s}
+.btn-sm:hover{border-color:var(--teal);color:var(--text)}
+.btn-sm.teal{background:var(--teal);color:#fff;border-color:var(--teal)}
+.btn-sm.diag{background:#fff7e6;border-color:var(--orange);color:#b26a00;margin-top:.5rem;width:100%}
+.btn-sm.upload{background:#eef2ff;border-color:var(--purple);color:var(--purple);width:100%;margin-top:.5rem}
+.status{margin-top:.8rem;font-size:.8rem;color:var(--muted)}
+.status.loading::before{content:'';display:inline-block;width:12px;height:12px;border:2px solid var(--teal);border-radius:50%;border-top-color:transparent;animation:spin .6s linear infinite;margin-right:7px;vertical-align:middle}
+.status pre{font-size:.7rem;line-height:1.4;white-space:pre-wrap;background:#fff;border:1px solid var(--border);border-radius:.5rem;padding:.5rem;margin-top:.4rem;max-height:240px;overflow:auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.output-toolbar{display:flex;gap:8px;justify-content:flex-end;margin-bottom:1rem;flex-wrap:wrap}
+.output-box{background:var(--bg);border:1px solid var(--border);border-radius:.9rem;padding:1rem 1.2rem;min-height:450px;max-height:82vh;overflow-y:auto;font-size:.85rem;line-height:1.55;flex:1;position:relative;}
+.empty-hint{color:var(--muted);text-align:center;padding:3rem 1rem;font-size:.85rem}
+.hint-box{background:var(--card);border-left:3px solid var(--teal);border-radius:0 .6rem .6rem 0;padding:.7rem 1rem;font-size:.75rem;color:var(--muted);margin-top:1rem}
+.back-btn-fixed{position:fixed;bottom:10px;left:24px;background:#1bb8b3;color:#fff;text-decoration:none;padding:12px 28px;border-radius:12px;font-weight:600;font-size:14px;transition:all .2s;z-index:100;box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.back-btn-fixed:hover{background:#074844;transform:translateY(-2px)}
+.api-status{display:inline-block;padding:4px 14px;border-radius:30px;font-size:.7rem;font-weight:600;margin-left:12px;vertical-align:middle}
+.api-status.ok{background:#ddf3ef;color:#1e6b6b}
+.api-status.err{background:#fde8e5;color:#c2412c}
+
+.api-section{background:rgba(14,158,158,0.06);border:1px solid rgba(14,158,158,0.22);border-radius:10px;padding:11px 13px;margin-bottom:13px}
+.api-label{font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:5px;display:flex;align-items:center;gap:5px}
+.api-input-wrap{display:flex;gap:6px;align-items:center}
+.api-input{flex:1;background:#f7fdfd;border:1px solid var(--border);border-radius:8px;padding:8px 11px;font-size:0.8rem;font-family:inherit;color:var(--text);outline:none}
+.api-toggle{background:none;border:1px solid var(--border);border-radius:6px;padding:7px 9px;cursor:pointer;font-size:0.75rem;color:var(--muted);white-space:nowrap}
+
+/* Слайд-превью 16:9 */
+.slide-card{background:var(--surface);border:1px solid var(--border);border-radius:1rem;margin-bottom:.9rem;overflow:hidden;transition:box-shadow .15s;position:relative;}
+.slide-head{display:flex;align-items:center;gap:.6rem;padding:.6rem 1rem;background:var(--card);border-bottom:1px solid var(--border);flex-wrap:wrap}
+.slide-n{font-family:'Syne',sans-serif;font-weight:800;color:var(--teal);font-size:1.05rem;min-width:1.8rem}
+.badge{font-size:.66rem;font-weight:700;padding:2px 9px;border-radius:100px;background:#fff;border:1px solid var(--border);color:var(--muted);text-transform:uppercase}
+.badge.fn{background:var(--teal);border-color:var(--teal);color:#fff}
+
+/* Контейнер 16:9 */
+.slide-body{
+  display:block;
+  position:relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow:hidden;
+}
+
+/* Абсолютное позиционирование контента */
+.slide-content{
+  position:absolute;
+  inset:0;
+  padding: 2%;
+  background-color: rgba(255,255,255,0.7);
+}
+
+/* Элементы для перетаскивания */
+.draggable-obj{
+  position:absolute;
+  cursor:move;
+  border: 1px dashed transparent;
+  padding: 4px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 6px;
+  touch-action: none;
+  user-select: none;
+  z-index: 10;
+  min-width: 50px;
+  min-height: 50px;
+  text-align: left;
+  transition: transform 0.05s linear;
+}
+.draggable-obj:hover{border-color:var(--teal);}
+.draggable-obj:active{border-color:var(--teal2);box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+.draggable-obj img{display:block;max-width:100%;pointer-events:none;}
+
+/* Уголки для ресайза картинки */
+.resize-handle {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: var(--teal);
+  border-radius: 50%;
+  z-index: 20;
+}
+.resize-handle.br { right: -6px; bottom: -6px; cursor: se-resize; }
+.resize-handle.bl { left: -6px; bottom: -6px; cursor: sw-resize; }
+.resize-handle.tr { right: -6px; top: -6px; cursor: ne-resize; }
+.resize-handle.tl { left: -6px; top: -6px; cursor: nw-resize; }
+
+.text-block { width: 40%; }
+.img-block { width: 45%; position: relative; }
+
+.slide-title{font-weight:700;font-size:1.1rem;line-height:1.3;margin-bottom:.5rem;word-wrap:break-word;overflow-wrap:break-word;outline:none;}
+.slide-title:focus{background:rgba(14,158,158,.1);}
+.slide-big{font-weight:800;font-size:1.6rem;line-height:1.2;margin-bottom:.5rem;word-wrap:break-word;overflow-wrap:break-word;outline:none;}
+.slide-big:focus{background:rgba(14,158,158,.1);}
+.slide-text ul{padding-left:1.1rem;margin:0;}
+.slide-text li{margin-bottom:4px;word-wrap:break-word;overflow-wrap:break-word;outline:none;}
+.slide-text li:focus{background:rgba(14,158,158,.1);}
+.slide-text strong { font-weight: 800; color: #000; }
+
+/* Панель управления текстом */
+.text-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 6px;
+  align-items: center;
+}
+.ctrl-group {
+  display: flex;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.ctrl-btn {
+  background: transparent; border: none;
+  width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; cursor: pointer; color: var(--muted);
+  border-right: 1px solid var(--border);
+}
+.ctrl-btn:last-child { border-right: none; }
+.ctrl-btn:hover { background: var(--card); color: var(--text); }
+.ctrl-btn.active { background: var(--teal); color: #fff; }
+
+/* Панель управления картинкой */
+.img-controls {
+  position: absolute;
+  top: -30px;
+  right: 0;
+  display: flex;
+  gap: 4px;
+  z-index: 30;
+}
+.img-btn {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; cursor: pointer;
+}
+.img-btn:hover { border-color: var(--teal); color: var(--teal); }
+.img-btn.del:hover { border-color: var(--red); color: var(--red); }
+
+/* Папка пользователя */
+.user-folder {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  gap: 6px;
+  margin-top: 0.8rem;
+  max-height: 150px;
+  overflow-y: auto;
+  padding: 4px;
+  background: var(--card);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.folder-img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 4px;
+  cursor: grab;
+  border: 1px solid transparent;
+}
+.folder-img:active { cursor: grabbing; }
+.folder-img:hover { border-color: var(--teal); }
+.drop-zone {
+  border: 2px dashed var(--purple);
+  background: #eef2ff;
+  color: var(--purple);
+  text-align: center;
+  padding: 1rem;
+  border-radius: 0.8rem;
+  margin-top: 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.drop-zone.drag-active { background: #d8dfff; border-style: solid; }
+
+/* Схемы */
+.vg-scheme{display:flex;flex-direction:column;gap:6px;width:100%}
+.vg-center{background:linear-gradient(135deg,rgba(14,158,158,0.12),rgba(45,212,191,0.12));border:2px solid rgba(14,158,158,0.4);border-radius:8px;padding:8px;text-align:center;font-weight:700;color:var(--teal2);font-size:.82rem}
+.vg-arrow{text-align:center;color:var(--muted);font-size:1rem;margin:-4px 0}
+.vg-items{display:flex;flex-direction:column;gap:5px}
+.vg-item{background:#f0fbfb;border:1px solid var(--border);border-left:3px solid var(--teal);border-radius:6px;padding:6px 9px;font-size:.72rem;line-height:1.35}
+.vg-item-num{font-weight:700;color:var(--teal);font-size:0.58rem;margin-bottom:2px}
+.vg-shatov{background:#fffef5;border:2px solid #d4c560;border-radius:10px;padding:10px;width:100%;}
+.vg-shatov-header{text-align:center;margin-bottom:8px;border-bottom:2px dashed #c9b940;padding-bottom:5px}
+.vg-shatov-title{font-weight:800;font-size:.85rem;color:#2d2400}
+.vg-shatov-grid{display:grid;grid-template-columns:1fr;gap:8px}
+.vg-shatov-block{border:2px solid #c8b400;border-radius:6px;padding:6px;background:#fff;position:relative;margin-top:4px;}
+.vg-shatov-num{position:absolute;top:-7px;left:5px;background:#d4c560;color:#2d2400;font-weight:800;font-size:.55rem;padding:0 5px;border-radius:8px}
+.vg-shatov-key{font-weight:800;font-size:.65rem;text-align:center;margin-bottom:3px;text-transform:uppercase}
+.vg-shatov-facts{list-style:none;padding:0}
+.vg-shatov-facts li{font-size:.62rem;color:#3d3200;line-height:1.3;padding:1px 0}
+.vg-table{width:100%;border-collapse:collapse;font-size:.7rem}
+.vg-table th{background:rgba(14,158,158,0.12);border:1px solid var(--border);padding:4px;text-align:left}
+.vg-table td{border:1px solid var(--border);padding:4px;}
+
+/* Модалка */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:1000;padding:1rem}
+.modal.on{display:flex}
+.modal-box{background:#fff;border-radius:1rem;padding:1.5rem;max-width:560px;width:100%;max-height:90vh;overflow-y:auto}
+
+/* Источники картинок */
+.src-box summary{cursor:pointer;font-size:.72rem;font-weight:700;color:var(--teal2);text-transform:uppercase;letter-spacing:.4px}
+.src-grid{display:grid;grid-template-columns:1fr;gap:3px;margin-top:8px;max-height:210px;overflow-y:auto;padding-right:4px}
+.src-grid label{font-size:.7rem;display:flex;gap:6px;align-items:flex-start;cursor:pointer;line-height:1.3}
+.src-key{margin-top:6px}
+.src-key label{font-size:.66rem;color:var(--muted);display:block;margin-bottom:2px}
+.src-key input{padding:.35rem .6rem;font-size:.72rem;border-radius:.5rem}
+.src-note{font-size:.64rem;color:var(--muted);margin-top:6px;line-height:1.35}
+.img-block img{width:100%}
+
+.demo-badge{display:inline-flex;align-items:center;justify-content:center;width:88px;height:88px;margin-left:14px;vertical-align:middle;background:linear-gradient(135deg,#ff7a00,#ffd000);clip-path:polygon(50% 0%,61% 11%,75% 6%,80% 20%,94% 25%,89% 39%,100% 50%,89% 61%,94% 75%,80% 80%,75% 94%,61% 89%,50% 100%,39% 89%,25% 94%,20% 80%,6% 75%,11% 61%,0% 50%,11% 39%,6% 25%,20% 20%,25% 6%,39% 11%);color:#4a2300;font:800 1.2rem 'Syne',sans-serif;transform:rotate(-8deg);-webkit-text-fill-color:#4a2300}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Генератор <span class="accent">презентаций PRO</span><span class="demo-badge" title="Демонстрационная версия">Demo</span></h1>
+  <p>Демо-версия · бесплатная ИИ-модель, API-ключ не нужен · до 8 слайдов · PPTX</p>
+</div>
+
+<div class="layout">
+  <div class="panel left-panel">
+    <details class="api-section src-box">
+      <summary>🖼 Источники картинок и ключи</summary>
+      <label style="font-size:.7rem;display:flex;gap:6px;align-items:flex-start;margin-top:8px;cursor:pointer"><input type="checkbox" id="visionCheck"> <span>ИИ проверяет кандидатов «зрением» (если модель принимает картинки)</span></label>
+      <div class="src-grid" id="srcList"></div>
+            <div class="src-note">⚗️ — экспериментально: у сайта нет открытого API, картинки берутся со страницы поиска, права проверяйте на сайте. Запросы идут напрямую, при блокировке CORS — через бесплатные прокси (corsproxy.io, allorigins, codetabs).</div>
+    </details>
+
+    <div class="panel-title">ПАРАМЕТРЫ</div>
+    <div class="two-col">
+      <div class="input-row"><label>Предмет</label>
+        <select id="subjectSelect">
+          <option>Биология</option><option>География</option><option>Химия</option><option>Человек и мир</option>
+        </select>
+      </div>
+      <div class="input-row"><label>Класс</label>
+        <select id="classSelect" disabled>
+          <option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="input-row">
+      <label>Параграф / тема</label>
+      <select id="topicSelect"><option value="">-- выберите параграф --</option></select>
+    </div>
+
+    <div class="input-row">
+      <label>Или введите тему вручную</label>
+      <input type="text" id="manualTopic" placeholder="Например: Фотосинтез">
+    </div>
+
+    <div class="two-col">
+      <div class="input-row"><label>Кол-во слайдов</label>
+        <input type="number" id="slideCount" value="6" min="3" max="8">
+      </div>
+      <div class="input-row"><label>Шрифт</label>
+        <select id="fontSelect">
+          <option value="Montserrat">Montserrat</option><option value="Roboto">Roboto</option><option value="Open Sans">Open Sans</option><option value="PT Sans">PT Sans</option><option value="Inter">Inter</option><option value="Bebas Neue">Bebas Neue</option><option value="Oswald">Oswald</option><option value="Arial">Arial</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="input-row"><label>Основной цвет</label>
+        <div class="color-picker"><input type="color" id="accentColor" value="#0e9e88"><input type="text" id="accentHex" value="#0E9E88" maxlength="7"></div>
+      </div>
+      <div class="input-row"><label>Второй цвет</label>
+        <div class="color-picker"><input type="color" id="accent2Color" value="#ffb703"><input type="text" id="accent2Hex" value="#FFB703" maxlength="7"></div>
+      </div>
+    </div>
+
+    <div class="panel-title" style="margin-top:1rem">ФОН ПРЕЗЕНТАЦИИ</div>
+    <div class="two-col">
+      <div class="input-row">
+        <button class="btn-sm upload" id="uploadBgBtn">🖼 Загрузить фон</button>
+        <input type="file" id="bgFile" accept="image/*" style="display:none">
+      </div>
+      <div class="input-row">
+        <button class="btn-sm" style="width:100%;border-color:var(--red);color:var(--red)" id="clearBgBtn">✕ Очистить фон</button>
+      </div>
+    </div>
+    <div id="bgPreview" style="font-size:0.7rem;color:var(--muted);margin-bottom:1rem;"></div>
+
+    <div class="panel-title" style="margin-top:1rem">МОИ КАРТИНКИ</div>
+    <div class="drop-zone" id="dropZone">📁 Перетащите картинки сюда<br><span style="font-size:0.65rem;font-weight:400">(или нажмите)</span><input type="file" id="fileInput" multiple accept="image/*" style="display:none"></div>
+    <div class="user-folder" id="userFolder"></div>
+
+    <button class="btn" id="processBtn" style="margin-top:1.5rem;">Создать презентацию</button>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div class="panel right-panel">
+    <div class="output-toolbar">
+      <button class="btn-sm teal" id="pptxBtn">⬇ Скачать .pptx</button>
+      <button class="btn-sm" id="clearBtn">🗑️ Очистить</button>
+    </div>
+    <div class="panel-title">СЛАЙДЫ (16:9) <span style="font-size:.65rem;color:var(--muted);text-transform:none;font-weight:400">— редактируйте текст, тяните за уголки для размера</span></div>
+    <div class="output-box" id="outputBox">
+      <div class="empty-hint">Выберите тему и нажмите «Создать презентацию»</div>
+    </div>
+  </div>
+</div>
+
+<!-- Модалка замены картинки -->
+<div class="modal" id="imgModal">
+  <div class="modal-box">
+    <button style="float:right;border:none;background:none;font-size:1.4rem;cursor:pointer;" onclick="closeImgModal()">×</button>
+    <h3 style="font-family:'Syne',sans-serif;margin-bottom:1rem;">🖼 Заменить картинку</h3>
+    <input type="file" id="slideImgFile" accept="image/*">
+    <div id="imgPreviewBox" style="margin-top:.8rem"></div>
+    <button class="btn-sm teal" id="applyImgBtn" style="width:100%;margin-top:.6rem">Применить</button>
+  </div>
+</div>
+
+<a href="index.html" class="back-btn-fixed">Назад</a>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// КОНФИГУРАЦИЯ И API
+// ══════════════════════════════════════════════════════════════
+let state = { concept: null, slides: [], gallery: [], bgImage: null };
+let currentImgIdx = -1;
+
+function showToast(msg, type){
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = `position:fixed;bottom:80px;right:20px;background:${type==='ok'?'#0e9e88':'#ef4444'};color:#fff;padding:10px 18px;border-radius:8px;z-index:10000;transition:opacity .3s;font-size:0.9rem;`;
+  document.body.appendChild(t);
+  setTimeout(()=>{ t.style.opacity='0'; setTimeout(()=>t.remove(),300); }, 2500);
+}
+// Бесплатная модель Pollinations (OpenAI-совместимый endpoint, без ключа)
+const FREE_API_URL = 'https://text.pollinations.ai/openai';
+const FREE_MODEL = 'openai';
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+async function callAPI(prompt, maxTokens){
+  let lastErr;
+  for (let i = 0; i < 4; i++){
+    try {
+      const r = await fetch(FREE_API_URL, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: FREE_MODEL, messages: [{ role: 'user', content: prompt }], max_tokens: maxTokens })
+      });
+      if (r.status === 429 || r.status >= 500){ lastErr = new Error('Бесплатная модель занята (' + r.status + '), повторяю...'); await sleep(4000 * (i + 1)); continue; }
+      if (!r.ok) throw new Error('Ошибка API: ' + r.status);
+      const data = await r.json();
+      const c = data.choices?.[0]?.message?.content;
+      if (!c) throw new Error('Пустой ответ модели');
+      return c;
+    } catch(e){ lastErr = e; if (i < 3) await sleep(2000); }
+  }
+  throw lastErr;
+}
+function parseJSON(text){
+  let t = String(text).trim().replace(/^```(?:json)?/i,'').replace(/```$/,'').trim();
+  const firstObj = t.indexOf('{'), firstArr = t.indexOf('[');
+  let start, end;
+  if (firstArr !== -1 && (firstObj === -1 || firstArr < firstObj)){ start = firstArr; end = t.lastIndexOf(']'); }
+  else { start = firstObj; end = t.lastIndexOf('}'); }
+  if (start === -1 || end === -1) throw new Error('ИИ вернул не JSON');
+  return JSON.parse(t.slice(start, end + 1));
+}
+async function callJSON(prompt, maxTokens, temp){
+  for (let i = 0; i < 3; i++){
+    try { return parseJSON(await callAPI(prompt, maxTokens, temp)); }
+    catch(e){ if (/40[13]/.test(e.message)) throw e; await new Promise(r=>setTimeout(r,1500)); }
+  }
+  throw new Error('Не удалось распарсить JSON');
+}
+
+// ══════════════════════════════════════════════════════════════
+// БАЗА ТЕМ
+// ══════════════════════════════════════════════════════════════
+const topicDatabase = {
+  "Биология":      { cls: "6", topic: "§ 10 Фотосинтез — способ питания растений" },
+  "География":     { cls: "6", topic: "§ 17 Ветер. Циркуляция атмосферы" },
+  "Химия":         { cls: "7", topic: "§ 23 Состав и свойства воды" },
+  "Человек и мир": { cls: "5", topic: "§ 6 Солнечная система" }
+};
+function updateTopicSelect(){
+  const d = topicDatabase[document.getElementById('subjectSelect').value];
+  const sel = document.getElementById('topicSelect');
+  sel.innerHTML = '';
+  const o = document.createElement('option'); o.value = d.topic; o.textContent = d.topic; sel.appendChild(o);
+  document.getElementById('classSelect').value = d.cls;
+}
+function syncTopic(){
+  const v = document.getElementById('topicSelect').value;
+  if (v) document.getElementById('manualTopic').value = v;
+}
+
+// ══════════════════════════════════════════════════════════════
+// ФОН И ГАЛЕРЕЯ
+// ══════════════════════════════════════════════════════════════
+document.getElementById('uploadBgBtn').addEventListener('click', ()=>{ document.getElementById('bgFile').click(); });
+document.getElementById('bgFile').addEventListener('change', (e)=>{
+  const f = e.target.files[0]; if (!f) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    state.bgImage = reader.result;
+    document.getElementById('bgPreview').innerHTML = `✅ Фон загружен: <img src="${state.bgImage}" style="height:30px;border-radius:4px;vertical-align:middle;">`;
+    if (state.slides.length) render([]);
+  };
+  reader.readAsDataURL(f);
+});
+document.getElementById('clearBgBtn').addEventListener('click', ()=>{
+  state.bgImage = null;
+  document.getElementById('bgPreview').innerHTML = '';
+  if (state.slides.length) render([]);
+});
+
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const userFolder = document.getElementById('userFolder');
+
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-active'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-active'));
+dropZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropZone.classList.remove('drag-active');
+  handleFiles(e.dataTransfer.files);
+});
+fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+function handleFiles(files) {
+  Array.from(files).forEach(file => {
+    if (!file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      state.gallery.push(ev.target.result);
+      renderGallery();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderGallery() {
+  userFolder.innerHTML = state.gallery.map((src, i) => `
+    <img src="${src}" class="folder-img" draggable="true" data-idx="${i}" title="Перетащите на слайд">
+  `).join('');
+
+  userFolder.querySelectorAll('.folder-img').forEach(img => {
+    img.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', 'gallery_img');
+      e.dataTransfer.setData('image-data', img.src);
+      e.dataTransfer.effectAllowed = 'copy';
+    });
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+// ЦВЕТА И ШРИФТЫ
+// ══════════════════════════════════════════════════════════════
+function normalizeHex(s){ s = String(s || '').trim().replace(/^#/, '').toUpperCase(); if (/^[0-9A-F]{6}$/.test(s)) return '#' + s; return ''; }
+function bindPair(cId, hId){
+  const c = document.getElementById(cId), h = document.getElementById(hId);
+  c.addEventListener('input', ()=>{ h.value = c.value.toUpperCase(); if (state.slides.length) render([]); });
+  h.addEventListener('input', ()=>{ const v = normalizeHex(h.value); if (v){ c.value = v; if (state.slides.length) render([]); } });
+}
+bindPair('accentColor','accentHex'); bindPair('accent2Color','accent2Hex');
+
+function getUserPalette(){ return { accent: (normalizeHex(document.getElementById('accentHex').value)||'#0E9E88').replace('#',''), accent2: (normalizeHex(document.getElementById('accent2Hex').value)||'#FFB703').replace('#','') }; }
+function getUserFont(){ return document.getElementById('fontSelect').value || 'Arial'; }
+function val(id){ return document.getElementById(id)?.value.trim() || ''; }
+function esc(s){ return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function setStatus(msg, type){ const el = document.getElementById('status'); el.innerHTML = msg; el.className = 'status ' + (type || ''); }
+
+// ══════════════════════════════════════════════════════════════
+// ПРОМПТЫ
+// ══════════════════════════════════════════════════════════════
+const RULES = `ПРАВИЛА ПРЕЗЕНТАЦИИ:
+1. Один слайд – одна мысль.
+2. Текст: 3–5 коротких строк, читается за 3 секунды.
+3. Изображение или схема занимает не менее трети слайда.
+4. Выделяй ключевые слова **звёздочками** (они станут жирными).
+5. Никаких «Введение», «Спасибо за внимание».
+
+ВЫБОР ВИЗУАЛИЗАЦИИ (visual_mode). Подбирай по смыслу слайда и чередуй: фото — не более 40% слайдов, один и тот же тип схемы — не более двух раз подряд:
+- photo — реальный объект, организм, место, прибор, явление;
+- diagram — объект и его части / составляющие;
+- flowchart — процесс по шагам, в том числе с условием;
+- timeline — история, открытия, этапы по датам;
+- mindmap — обзор темы: главная идея и её ветви;
+- table — классификация или сравнение по нескольким признакам;
+- shatov — опорный конспект (блоки с ключевыми словами и фактами);
+- infographic — числа, доли, ключевые факты;
+- comparison — сравнение двух объектов или явлений;
+- cycle — круговороты, жизненные циклы, повторяющиеся процессы;
+- hierarchy — классификация, систематика, подчинённость.`;
+
+const promptOutline = (ctx, count) => `Ты – учитель-методист.
+${ctx}
+${RULES}
+Сделай план ровно из ${count} слайдов, для каждого заранее выбери visual_mode (из списка выше). Выведи ТОЛЬКО JSON:
+{ "concept": { "audience_goal": "...", "big_idea": "..." }, "outline": [ {"n":1,"layout":"title","title":"Заголовок","message":"Одна мысль","visual_mode":"photo"} ] }`;
+
+const promptSlides = (ctx, concept, outline, from, to) => `Ты – учитель-методист.
+${ctx}
+${RULES}
+ПЛАН (в скобках — выбранный тип визуализации, придерживайся его):
+${outline.map(o => `${o.n}. ${o.title} [${o.visual_mode || '?'}] — ${o.message || ''}`).join('\n')}
+
+Раскрой слайды с ${from} по ${to}. Выведи ТОЛЬКО JSON-массив:
+[ { "n": 1, "layout": "title", "title": "...", "big_text": "...", "bullets": ["..."], "visual_mode": "photo", "visual_data": { ... }, "speaker_notes": "..." } ]
+
+Формат visual_data по типам (тексты в схемах — короткие, 1–6 слов):
+- photo: {"query_en":"2–4 английских слова: конкретный объект, например 'mitochondria structure'","query_ru":"2–4 слова по-русски","description_ru":"что именно должно быть на картинке"}
+- diagram: {"center":"...","steps":["до 8 элементов"]}
+- flowchart: {"steps":[{"text":"...","type":"start|process|decision|end"}]}  (4–9 шагов)
+- timeline: {"events":[{"date":"год/этап","title":"...","text":"до 10 слов"}]}  (4–6 событий)
+- mindmap: {"center":"...","branches":[{"title":"...","children":["...","..."]}]}  (4–6 ветвей, до 3 пунктов в каждой)
+- table: {"columns":["A","B","C"],"rows":[["...","...","..."]]}  (до 4 столбцов, до 6 строк, ячейки короткие)
+- shatov: {"title":"...","blocks":[{"num":"01","key":"ключевое слово","facts":["факт","факт"]}]}  (3–4 блока)
+- infographic: {"title":"...","stats":[{"value":"70%","label":"что это"}],"note":"вывод одной строкой"}  (3–4 карточки)
+- comparison: {"left":{"title":"...","points":["..."]},"right":{"title":"...","points":["..."]}}  (по 3–5 пунктов)
+- cycle: {"center":"...","steps":["3–6 этапов по кругу"]}
+- hierarchy: {"root":{"text":"...","children":[{"text":"...","children":[{"text":"..."}]}]}}  (до 3 уровней, не более 8 листьев)`;
+
+// ══════════════════════════════════════════════════════════════
+// ПАРСИНГ ЗВЕЗДОЧЕК В HTML
+// ══════════════════════════════════════════════════════════════
+function parseMarkdown(text) {
+  return text.split(/(\*\*.*?\*\*)/g).map(part => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return `<strong>${esc(part.slice(2, -2))}</strong>`;
+    }
+    return esc(part);
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════════
+// ПОИСК В БАЗАХ
+// ══════════════════════════════════════════════════════════════
+function isDirectImage(u){ if (!u || typeof u !== 'string') return false; try { const p = new URL(u); return p.protocol==='http:' || p.protocol==='https:'; } catch(_){ return false; } }
+
+// ── CORS: сначала напрямую, потом через бесплатные прокси ─────
+const CORS_PROXIES = [
+  u => `https://corsproxy.io/?url=${encodeURIComponent(u)}`,
+  u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+  u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`
+];
+async function timedFetch(url, opts = {}, ms = 12000){
+  const ac = new AbortController(); const t = setTimeout(()=>ac.abort(), ms);
+  try { return await fetch(url, { ...opts, signal: ac.signal }); } finally { clearTimeout(t); }
+}
+async function fetchSmart(url, opts = {}){
+  try { const r = await timedFetch(url, opts); if (r.ok) return r; } catch(_){}
+  for (const mk of CORS_PROXIES){
+    try { const r = await timedFetch(mk(url), {}, 15000); if (r.ok) return r; } catch(_){}
+  }
+  throw new Error('fetch failed: ' + url);
+}
+async function fetchJSON(url, opts){ return (await fetchSmart(url, opts)).json(); }
+
+function blobToDataURL(b){ return new Promise((res, rej)=>{ const fr = new FileReader(); fr.onload = ()=>res(fr.result); fr.onerror = rej; fr.readAsDataURL(b); }); }
+function shrinkDataURL(du, max){
+  return new Promise(res => {
+    if (du.startsWith('data:image/svg')) return res(du);
+    const im = new Image();
+    im.onload = () => {
+      const k = Math.min(1, max / Math.max(im.width, im.height));
+      if (k === 1 && du.length < 1.5e6) return res(du);
+      const c = document.createElement('canvas'); c.width = Math.round(im.width*k); c.height = Math.round(im.height*k);
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+      res(c.toDataURL('image/jpeg', 0.86));
+    };
+    im.onerror = () => res(du);
+    im.src = du;
+  });
+}
+// Скачиваем картинку и храним как data-URL: так её не блокирует hotlink/CORS и она попадает в PPTX
+async function urlToDataURL(url){
+  const r = await fetchSmart(url);
+  const b = await r.blob();
+  if (!/^image\//.test(b.type)) throw new Error('not an image');
+  return shrinkDataURL(await blobToDataURL(b), 1100);
+}
+
+// ── Ключи ─────────────────────────────────────────────────────
+function getKey(n){ return (localStorage.getItem('img_key_' + n) || '').trim(); }
+const KEY_DEFS = [
+  ['pexels',     'Pexels API key',            'https://www.pexels.com/api/'],
+  ['unsplash',   'Unsplash Access Key',       'https://unsplash.com/developers'],
+  ['pixabay',    'Pixabay API key',           'https://pixabay.com/api/docs/'],
+  ['flickr',     'Flickr API key (Commons)',  'https://www.flickr.com/services/apps/create/'],
+  ['europeana',  'Europeana wskey (пусто = демо)', 'https://pro.europeana.eu/page/get-api'],
+  ['smithsonian','Smithsonian key (пусто = DEMO_KEY)', 'https://api.data.gov/signup/']
+];
+
+// ── Источники ─────────────────────────────────────────────────
+const strip = s => String(s || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+function cand(url, title, desc, source, extra){ return { url, title: strip(title), desc: strip(desc).slice(0, 220), source, ...(extra||{}) }; }
+
+async function srcOpenverse(q, source, label){
+  let u = `https://api.openverse.org/v1/images/?q=${encodeURIComponent(q)}&page_size=8&mature=false`;
+  if (source) u += `&source=${source}`;
+  const j = await fetchJSON(u);
+  return (j.results || []).map(x => cand(x.thumbnail || x.url, x.title, (x.tags||[]).map(t=>t.name).slice(0,6).join(', '), label || 'Openverse', { license: x.license ? 'CC ' + String(x.license).toUpperCase() : '', alt: x.url }));
+}
+async function srcCommons(q, label, suffix = ''){
+  const u = `https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrsearch=${encodeURIComponent(q + suffix + ' filetype:bitmap|drawing')}&gsrnamespace=6&gsrlimit=10&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=900`;
+  const j = await fetchJSON(u);
+  return Object.values(j?.query?.pages || {}).sort((a,b)=>(a.index||0)-(b.index||0)).map(p => {
+    const ii = p.imageinfo?.[0], em = ii?.extmetadata || {};
+    return cand(ii?.thumburl || ii?.url, (p.title||'').replace(/^File:/,'').replace(/\.\w+$/,''), em.ImageDescription?.value || em.Categories?.value || '', label, { license: em.LicenseShortName?.value || 'Wikimedia' });
+  });
+}
+async function srcWikipedia(q, lang, label){
+  const u = `https://${lang}.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrsearch=${encodeURIComponent(q)}&gsrlimit=5&prop=pageimages|extracts&piprop=thumbnail&pithumbsize=900&exintro=1&explaintext=1&exsentences=2&exlimit=5`;
+  const j = await fetchJSON(u);
+  return Object.values(j?.query?.pages || {}).sort((a,b)=>(a.index||0)-(b.index||0)).filter(p => p.thumbnail?.source)
+    .map(p => cand(p.thumbnail.source, p.title, p.extract, label, { license: 'Wikipedia / Commons' }));
+}
+async function srcNasa(q){
+  const j = await fetchJSON(`https://images-api.nasa.gov/search?q=${encodeURIComponent(q)}&media_type=image&page_size=8`);
+  return (j?.collection?.items || []).slice(0, 8).map(it => { const d = it.data?.[0] || {}; return cand(it.links?.[0]?.href, d.title, d.description, 'NASA', { license: 'NASA (общественное достояние)' }); });
+}
+async function srcSmithsonian(q){
+  const key = getKey('smithsonian') || 'DEMO_KEY';
+  const j = await fetchJSON(`https://api.si.edu/openaccess/api/v1.0/search?q=${encodeURIComponent(q + ' AND online_media_type:"Images"')}&rows=8&api_key=${encodeURIComponent(key)}`);
+  const out = [];
+  (j?.response?.rows || []).forEach(r => {
+    const c = r.content || {}, m = c.descriptiveNonRepeating?.online_media?.media?.[0];
+    if (m?.content) out.push(cand(m.content, c.descriptiveNonRepeating?.title?.content, c.freetext?.notes?.[0]?.content, 'Smithsonian', { license: 'Open Access (CC0)', alt: m.thumbnail }));
+  });
+  return out;
+}
+async function srcEuropeana(q){
+  const key = getKey('europeana') || 'api2demo';
+  const j = await fetchJSON(`https://api.europeana.eu/record/v2/search.json?wskey=${encodeURIComponent(key)}&query=${encodeURIComponent(q)}&media=true&thumbnail=true&reusability=open&rows=8`);
+  return (j.items || []).map(it => cand(it.edmPreview?.[0], it.title?.[0], it.dcDescription?.[0], 'Europeana', { license: 'open' }));
+}
+async function srcArchive(q){
+  const j = await fetchJSON(`https://archive.org/advancedsearch.php?q=${encodeURIComponent(q + ' AND mediatype:image')}&fl%5B%5D=identifier&fl%5B%5D=title&fl%5B%5D=description&rows=8&output=json`);
+  return (j.response?.docs || []).map(d => cand(`https://archive.org/services/img/${d.identifier}`, d.title, [].concat(d.description || '')[0], 'Internet Archive', { license: 'см. архив' }));
+}
+async function srcWellcome(q){
+  const j = await fetchJSON(`https://api.wellcomecollection.org/catalogue/v2/images?query=${encodeURIComponent(q)}&pageSize=8`);
+  return (j.results || []).map(r => cand((r.thumbnail?.url || '').replace(/!\d+,\d+/, '!800,800'), r.source?.title, '', 'Wellcome Collection', { license: r.locations?.[0]?.license?.label || 'CC' }));
+}
+async function srcUnsplash(q){
+  const j = await fetchJSON(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(q)}&per_page=8&client_id=${encodeURIComponent(getKey('unsplash'))}`);
+  return (j.results || []).map(x => cand(x.urls?.regular, x.alt_description || x.description, (x.tags||[]).map(t=>t.title).join(', '), 'Unsplash', { license: 'Unsplash License' }));
+}
+async function srcPexels(q){
+  const j = await fetchJSON(`https://api.pexels.com/v1/search?query=${encodeURIComponent(q)}&per_page=8`, { headers: { Authorization: getKey('pexels') } });
+  return (j.photos || []).map(x => cand(x.src?.large, x.alt, '', 'Pexels', { license: 'Pexels License' }));
+}
+async function srcPixabay(q){
+  const j = await fetchJSON(`https://pixabay.com/api/?key=${encodeURIComponent(getKey('pixabay'))}&q=${encodeURIComponent(q)}&per_page=8&safesearch=true`);
+  return (j.hits || []).map(x => cand(x.webformatURL, x.tags, x.tags, 'Pixabay', { license: 'Pixabay License' }));
+}
+async function srcFlickr(q){
+  const j = await fetchJSON(`https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=${encodeURIComponent(getKey('flickr'))}&text=${encodeURIComponent(q)}&is_commons=true&media=photos&per_page=8&format=json&nojsoncallback=1&extras=url_l,url_m,description&sort=relevance`);
+  return (j.photos?.photo || []).map(x => cand(x.url_l || x.url_m, x.title, x.description?._content, 'Flickr Commons', { license: 'No known copyright' }));
+}
+
+// Экспериментально: у этих сайтов нет открытого API картинок — берём картинки со страницы поиска.
+// Права на изображения проверяйте на самом сайте. Адреса поиска при необходимости поправьте здесь.
+const SCRAPE_SITES = [
+  { id:'runivers', label:'Руниверс', base:'https://runivers.ru', url:q=>`https://runivers.ru/search/?q=${encodeURIComponent(q)}` },
+  { id:'culture',  label:'Культура.РФ', base:'https://www.culture.ru', url:q=>`https://www.culture.ru/search?query=${encodeURIComponent(q)}` },
+  { id:'prlib',    label:'Президентская библиотека', base:'https://www.prlib.ru', url:q=>`https://www.prlib.ru/search?search_api_views_fulltext=${encodeURIComponent(q)}` },
+  { id:'arzamas',  label:'Арзамас', base:'https://arzamas.academy', url:q=>`https://arzamas.academy/search?q=${encodeURIComponent(q)}` },
+  { id:'nlb',      label:'Нац. библиотека Беларуси', base:'https://www.nlb.by', url:q=>`https://www.nlb.by/search/?q=${encodeURIComponent(q)}` }
+];
+async function srcScrape(site, q){
+  const html = await (await fetchSmart(site.url(q))).text();
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const out = [];
+  doc.querySelectorAll('img').forEach(im => {
+    const raw = im.getAttribute('data-src') || im.getAttribute('data-original') || im.getAttribute('src');
+    if (!raw) return;
+    let abs; try { abs = new URL(raw, site.base).href; } catch(_){ return; }
+    if (!/\.(jpe?g|png|webp)(\?|$)/i.test(abs) || /logo|icon|sprite|avatar|banner|pixel|favicon/i.test(abs)) return;
+    const w = parseInt(im.getAttribute('width') || '0', 10); if (w && w < 80) return;
+    out.push(cand(abs, im.getAttribute('alt') || im.getAttribute('title') || '', '', site.label, { license: 'проверьте права на сайте' }));
+  });
+  return out.slice(0, 8);
+}
+
+const IMG_SOURCES = [
+  { id:'wiki_ru',  label:'Википедия RU',                 def:true, ru:true, fn:Q=>srcWikipedia(Q.ru,'ru','Википедия RU') },
+  { id:'wiki_be',  label:'Википедия BE (беларуская)',    def:true, ru:true, fn:Q=>srcWikipedia(Q.ru,'be','Википедия BE') },
+  { id:'wiki_en',  label:'Wikipedia EN',                 def:true, fn:Q=>srcWikipedia(Q.en,'en','Wikipedia EN') },
+  { id:'commons_ru', label:'Викисклад (рус. запрос)',    def:true, ru:true, fn:Q=>srcCommons(Q.ru,'Викисклад') },
+  { id:'commons_en', label:'Wikimedia Commons (en)',     def:true, fn:Q=>srcCommons(Q.en,'Wikimedia Commons') },
+  { id:'gov',      label:'NOAA / USGS / ESA (через Commons)', def:true, fn:async Q=>(await Promise.allSettled([srcCommons(Q.en,'NOAA',' NOAA'), srcCommons(Q.en,'USGS',' USGS'), srcCommons(Q.en,'ESA',' ESA')])).flatMap(r=>r.status==='fulfilled'?r.value:[]) },
+  { id:'openverse', label:'Openverse',                   def:true, fn:Q=>srcOpenverse(Q.en) },
+  { id:'ov_flickr', label:'Flickr (CC, через Openverse)', def:true, fn:Q=>srcOpenverse(Q.en,'flickr','Flickr') },
+  { id:'ov_rawpixel', label:'Rawpixel Free (через Openverse)', def:true, fn:Q=>srcOpenverse(Q.en,'rawpixel','Rawpixel') },
+  { id:'ov_bhl',   label:'Biodiversity Heritage Library (через Openverse)', def:true, fn:Q=>srcOpenverse(Q.en,'biodivlib','BHL') },
+  { id:'ov_nasa',  label:'NASA (через Openverse)',       def:false, fn:Q=>srcOpenverse(Q.en,'nasa','NASA') },
+  { id:'nasa',     label:'NASA Image Library',           def:true, fn:Q=>srcNasa(Q.en) },
+  { id:'smithsonian', label:'Smithsonian Open Access',   def:true, fn:Q=>srcSmithsonian(Q.en) },
+  { id:'wellcome', label:'Wellcome Collection',          def:true, fn:Q=>srcWellcome(Q.en) },
+  { id:'europeana',label:'Europeana',                    def:true, fn:Q=>srcEuropeana(Q.en) },
+  { id:'archive',  label:'Internet Archive Images',      def:false, fn:Q=>srcArchive(Q.en) },
+  ...SCRAPE_SITES.map(s => ({ id:'x_'+s.id, label:s.label, exp:true, def:false, ru:true, fn:Q=>srcScrape(s, Q.ru) }))
+];
+
+function selectedSources(){
+  try { const s = JSON.parse(localStorage.getItem('img_sources') || 'null'); if (Array.isArray(s)) return s; } catch(_){}
+  return IMG_SOURCES.filter(x => x.def).map(x => x.id);
+}
+function buildSourceUI(){
+  const box = document.getElementById('srcList'); if (!box) return;
+  const sel = new Set(selectedSources());
+  box.innerHTML = IMG_SOURCES.map(s => `<label><input type="checkbox" data-src="${s.id}" ${sel.has(s.id) ? 'checked' : ''}> <span>${esc(s.label)}${s.key ? ' 🔑' : ''}${s.exp ? ' ⚗️' : ''}</span></label>`).join('');
+  box.querySelectorAll('input').forEach(cb => cb.addEventListener('change', () => {
+    localStorage.setItem('img_sources', JSON.stringify([...box.querySelectorAll('input:checked')].map(i => i.dataset.src)));
+  }));
+  const v = document.getElementById('visionCheck'); if (v){ v.checked = localStorage.getItem('img_vision') === '1'; v.addEventListener('change', () => localStorage.setItem('img_vision', v.checked ? '1' : '0')); }
+}
+
+async function mapPool(items, n, fn){
+  let i = 0;
+  await Promise.all(Array.from({ length: Math.min(n, items.length) }, async () => { while (i < items.length){ const k = i++; await fn(items[k], k); } }));
+}
+
+async function searchAll(Q){
+  const ids = new Set(selectedSources());
+  const list = IMG_SOURCES.filter(s => ids.has(s.id) && (!s.key || getKey(s.key)));
+  const results = await Promise.allSettled(list.map(s => s.fn(Q).then(r => r.slice(0, 8))));
+  const seen = new Set(), out = [];
+  results.forEach(r => { if (r.status === 'fulfilled') r.value.forEach(c => { if (isDirectImage(c.url) && !seen.has(c.url)){ seen.add(c.url); out.push(c); } }); });
+  return out;
+}
+function relevance(c, Q){
+  const words = new Set((Q.en + ' ' + Q.ru).toLowerCase().split(/[^a-zа-яё0-9]+/i).filter(w => w.length >= 4).map(w => w.slice(0, 5)));
+  const text = (c.title + ' ' + c.desc).toLowerCase(); let sc = 0;
+  words.forEach(w => { if (text.includes(w)) sc++; });
+  return sc;
+}
+
+// ── ИИ-оценка: сначала по описаниям, затем (опционально) зрением ──
+async function aiRank(ctx, s, cands){
+  const list = cands.map((c, i) => `${i}. [${c.source}] ${c.title}${c.desc ? ' — ' + c.desc.slice(0, 140) : ''}`).join('\n');
+  const prompt = `Ты — методист и подбираешь иллюстрацию к слайду школьной презентации.
+${ctx}
+Слайд: «${plain(s.title)}». Что должно быть показано: ${s.visual_data?.description_ru || s.visual_data?.query_ru || s.title}.
+Кандидаты (видны только описания):
+${list}
+
+Выбери до 4 лучших в порядке убывания пригодности. Подходит: фото, рисунок или схема именно этого объекта/явления, научно корректные. Не подходит: логотипы, реклама, портреты людей без связи со слайдом, посторонние объекты, обложки, страницы текста, мемы. Если ничего не подходит — верни пустой список.
+Верни ТОЛЬКО JSON: {"ranking":[индексы],"reason":"кратко"}`;
+  const r = await callJSON(prompt, 400, 0.2);
+  return (r.ranking || []).map(Number).filter(i => Number.isInteger(i) && i >= 0 && i < cands.length).slice(0, 4);
+}
+async function aiVision(ctx, s, cands){
+  const content = [{ type: 'text', text: `${ctx}\nСлайд: «${plain(s.title)}». Нужна иллюстрация: ${s.visual_data?.description_ru || s.title}.\nНиже ${cands.length} картинок, нумерация с 0 по порядку. Выбери ту, что лучше всего показывает именно это (чётко, без посторонних объектов, без водяных знаков и текста). Если ни одна не подходит — -1.\nВерни ТОЛЬКО JSON: {"best": число}` }];
+  cands.forEach(c => content.push({ type: 'image_url', image_url: { url: c.url } }));
+  const r = parseJSON(await callAPI(content, 200, 0.1));
+  const b = Number(r.best);
+  return Number.isInteger(b) ? b : null;
+}
+
+async function attachImage(s, topic, ctx){
+  const vd = s.visual_data || {};
+  const Q = { ru: vd.query_ru || plain(s.title) || topic, en: vd.query_en || topic };
+  const excl = new Set(s.exclude || []);
+  let cands = (await searchAll(Q)).filter(c => !excl.has(c.url));
+  if (!cands.length) cands = (await searchAll({ ru: topic, en: topic })).filter(c => !excl.has(c.url));
+  if (!cands.length){ s.visual_mode = 'none'; s.credit = ''; return false; }
+  cands = cands.map(c => ({ ...c, _r: relevance(c, Q) })).sort((a, b) => b._r - a._r).slice(0, 14);
+
+  let picks;
+  try { picks = (await aiRank(ctx, s, cands)).map(i => cands[i]); }
+  catch(_){ picks = cands.slice(0, 3); }
+  if (!picks.length){ s.visual_mode = 'none'; s.credit = ''; return false; }
+
+  if (document.getElementById('visionCheck')?.checked){
+    try {
+      const b = await aiVision(ctx, s, picks);
+      if (b === -1){ s.visual_mode = 'none'; s.credit = ''; return false; }
+      if (b !== null && picks[b]) picks = [picks[b], ...picks.filter((_, i) => i !== b)];
+    } catch(_){ /* модель/прокси без картинок — остаёмся на текстовой оценке */ }
+  }
+
+  for (const c of picks){
+    for (const u of [c.url, c.alt].filter(Boolean)){
+      try {
+        s.visual_url = await urlToDataURL(u);
+        s.visual_src = c.url; s.visual_mode = 'photo';
+        s.credit = c.source + (c.license ? ' · ' + c.license : '');
+        return true;
+      } catch(_){}
+    }
+  }
+  s.visual_url = picks[0].url; s.visual_src = picks[0].url; s.visual_mode = 'photo'; s.credit = picks[0].source;
+  return true;
+}
+
+// ══════════════════════════════════════════════════════════════
+// ГЕНЕРАЦИЯ
+// ══════════════════════════════════════════════════════════════
+const VISUAL_MODES = ['photo','diagram','flowchart','timeline','mindmap','table','shatov','infographic','comparison','cycle','hierarchy'];
+
+function buildCtx(topic){ return `Тема: ${topic}\nПредмет: ${val('subjectSelect')}\nКласс: ${val('classSelect')}`; }
+
+function normalizeSlides(topic){
+  state.slides.forEach(s => {
+    if (!VISUAL_MODES.includes(s.visual_mode)) s.visual_mode = 'photo';
+    s.visual_data = s.visual_data || {};
+    if (s.visual_mode !== 'photo' && !buildSchemeSVG(s.visual_mode, s.visual_data) && !(s.visual_mode === 'shatov' && s.visual_data.blocks)){
+      s.visual_data = { query_en: s.visual_data.query_en || topic, query_ru: s.visual_data.query_ru || plain(s.title), description_ru: plain(s.title) };
+      s.visual_mode = 'photo';
+    }
+  });
+}
+
+async function generate(){
+  const topic = val('manualTopic');
+  if (!topic){ setStatus('❌ Введите тему', 'err'); return; }
+
+  const count = Math.min(8, Math.max(3, parseInt(document.getElementById('slideCount').value) || 6));
+  const btn = document.getElementById('processBtn');
+  btn.disabled = true;
+
+  try {
+    const ctx = buildCtx(topic);
+    setStatus('🧠 Этап 1: планирование...', 'loading');
+    const plan = await callJSON(promptOutline(ctx, count), 4000, 0.8);
+    const outline = plan.outline.slice(0, count);
+
+    setStatus(`✍️ Этап 2: генерация ${count} слайдов...`, 'loading');
+    const results = [];
+    const STEP = 4;
+    for (let i = 0; i < count; i += STEP){
+      const a = i + 1, b = Math.min(i + STEP, count);
+      setStatus(`✍️ Слайды ${a}-${b}...`, 'loading');
+      const batch = await callJSON(promptSlides(ctx, plan.concept, outline, a, b), 8192, 0.7);
+      results.push(...batch);
+    }
+    state.slides = results.sort((x, y) => x.n - y.n);
+    normalizeSlides(topic);
+    render([]);
+
+    const targets = state.slides.filter(s => s.visual_mode === 'photo');
+    let done = 0;
+    setStatus(`🖼 Подбор картинок 0/${targets.length}...`, 'loading');
+    await mapPool(targets, 2, async s => {
+      try { await attachImage(s, topic, ctx); } catch(e){ console.warn('image error', e); s.visual_mode = 'none'; }
+      done++; setStatus(`🖼 Подбор картинок ${done}/${targets.length}...`, 'loading');
+    });
+
+    render([]);
+    setStatus('✅ Готово!', 'ok');
+  } catch(e){
+    setStatus(`❌ ${e.message}`, 'err');
+  } finally { btn.disabled = false; }
+}
+
+async function reimage(idx){
+  const s = state.slides[idx]; if (!s) return;
+  s.exclude = (s.exclude || []).concat([s.visual_src].filter(Boolean));
+  s.manual_img = null;
+  showToast('🔎 Ищу другую картинку...', 'ok');
+  try {
+    const topic = val('manualTopic');
+    if (!(await attachImage(s, topic, buildCtx(topic)))) showToast('Подходящих картинок больше нет', 'err');
+  } catch(e){ showToast('❌ ' + e.message, 'err'); }
+  render([]);
+}
+
+// ══════════════════════════════════════════════════════════════
+// РЕНДЕР 16:9
+// ══════════════════════════════════════════════════════════════
+function paletteForRender(){ const p = getUserPalette(); return { accent:p.accent, accent2:p.accent2 }; }
+
+// ══════════════════════════════════════════════════════════════
+// ВИЗУАЛИЗАЦИИ: опорный конспект (HTML) и схемы (SVG)
+// ══════════════════════════════════════════════════════════════
+const SVG_MODES = ['diagram','flowchart','timeline','mindmap','table','infographic','comparison','cycle','hierarchy'];
+const SV_W = 800, SV_H = 540;
+
+function hexToRgb(h){ h = h.replace('#',''); return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)]; }
+function tint(hex, t){ const [r,g,b] = hexToRgb(hex); const m = c => Math.round(c + (255-c)*t).toString(16).padStart(2,'0'); return '#'+m(r)+m(g)+m(b); }
+function darken(hex, t){ const [r,g,b] = hexToRgb(hex); const m = c => Math.round(c*(1-t)).toString(16).padStart(2,'0'); return '#'+m(r)+m(g)+m(b); }
+function schemeColors(){
+  const p = getUserPalette();
+  return ['#'+p.accent, '#'+p.accent2, '#7C3AED', '#E4572E', '#2E86DE', '#2BB673', '#D6336C', '#F59F00'];
+}
+function xe(s){ return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function plain(s){ return String(s ?? '').replace(/\*\*/g,''); }
+
+function wrapText(text, maxChars){
+  const words = plain(text).split(/\s+/).filter(Boolean);
+  const lines = []; let cur = '';
+  for (const w of words){
+    if (!cur) cur = w;
+    else if ((cur + ' ' + w).length <= maxChars) cur += ' ' + w;
+    else { lines.push(cur); cur = w; }
+  }
+  if (cur) lines.push(cur);
+  return lines.length ? lines : [''];
+}
+function fitText(text, w, h, maxS = 20, minS = 9){
+  for (let s = maxS; s >= minS; s--){
+    const cpl = Math.max(4, Math.floor(w / (s*0.56)));
+    const lines = wrapText(text, cpl);
+    if (lines.length * s * 1.25 <= h && !lines.some(l => l.length > cpl)) return { lines, size: s };
+  }
+  const s = minS, cpl = Math.max(4, Math.floor(w / (s*0.56)));
+  const lines = wrapText(text, cpl);
+  const maxL = Math.max(1, Math.floor(h / (s*1.25)));
+  if (lines.length > maxL){ lines.length = maxL; lines[maxL-1] = lines[maxL-1].replace(/.{0,2}$/, '…'); }
+  return { lines, size: s };
+}
+function svgLines(lines, cx, cy, size, fill, o = {}){
+  const anchor = o.anchor || 'middle', weight = o.weight || 600, lh = o.lh || 1.25;
+  const total = (lines.length - 1) * size * lh;
+  const y0 = cy - total/2 + size*0.35;
+  return `<text x="${cx}" text-anchor="${anchor}" font-size="${size}" font-weight="${weight}" fill="${fill}">` +
+    lines.map((l,i)=>`<tspan x="${cx}" y="${(y0 + i*size*lh).toFixed(1)}">${xe(l)}</tspan>`).join('') + `</text>`;
+}
+function nodeBox(x, y, w, h, text, color, o = {}){
+  const f = fitText(text, w - 16, h - 10, o.maxS || 18, 9);
+  const fill = o.fill || tint(color, .82);
+  const tc = o.textColor || darken(color, .55);
+  return `<rect x="${(x-w/2).toFixed(1)}" y="${(y-h/2).toFixed(1)}" width="${w}" height="${h}" rx="${o.r ?? 12}" fill="${fill}" stroke="${color}" stroke-width="2.5"/>` +
+    svgLines(f.lines, x.toFixed(1), y.toFixed(1), f.size, tc, { weight: 700 });
+}
+function svgWrap(inner){
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${SV_W} ${SV_H}" width="${SV_W}" height="${SV_H}" font-family="Arial, Helvetica, sans-serif">` +
+    `<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4b5d59"/></marker></defs>` +
+    `<rect width="${SV_W}" height="${SV_H}" rx="18" fill="#ffffff" fill-opacity="0.95"/>${inner}</svg>`;
+}
+function svgToUri(svg){ return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg); }
+const strItem = x => typeof x === 'string' ? x : (x?.text || x?.title || x?.name || '');
+
+// ── diagram: центр + элементы по эллипсу ─────────────────────
+function svgDiagram(d, C){
+  const steps = (d.steps || d.items || []).slice(0, 8).map(strItem);
+  const n = steps.length; if (!n) return '';
+  const cx = 400, cy = 270, rx = 285, ry = 185;
+  const nodes = steps.map((t,i)=>{ const a = -Math.PI/2 + i*2*Math.PI/n; return { t, x: cx + rx*Math.cos(a), y: cy + ry*Math.sin(a), c: C[(i+1) % C.length] }; });
+  let g = '';
+  nodes.forEach(nd => { g += `<line x1="${cx}" y1="${cy}" x2="${nd.x.toFixed(1)}" y2="${nd.y.toFixed(1)}" stroke="${nd.c}" stroke-width="3.5" stroke-dasharray="7 5"/>`; });
+  const f = fitText(d.center || '', 170, 80, 20, 11);
+  g += `<ellipse cx="${cx}" cy="${cy}" rx="115" ry="62" fill="${C[0]}" stroke="${darken(C[0],.3)}" stroke-width="3"/>` + svgLines(f.lines, cx, cy, f.size, '#fff', { weight: 800 });
+  nodes.forEach(nd => { g += nodeBox(nd.x, nd.y, 190, 66, nd.t, nd.c, { maxS: 16 }); });
+  return svgWrap(g);
+}
+
+// ── flowchart: змейка по 3 в ряд, start/process/decision/end ──
+function svgFlowchart(d, C){
+  const raw = (d.steps || d.nodes || []).slice(0, 9);
+  const n = raw.length; if (!n) return '';
+  const nodes = raw.map((x,i)=>{
+    let type = (typeof x === 'object' && x.type) ? String(x.type).toLowerCase() : '';
+    if (!['start','end','decision','process'].includes(type)) type = i === 0 ? 'start' : (i === n-1 ? 'end' : 'process');
+    return { t: strItem(x), type, i };
+  });
+  const cols = [130, 400, 670], rows = Math.ceil(n/3);
+  const ys = rows === 1 ? [270] : rows === 2 ? [180, 380] : [100, 270, 440];
+  nodes.forEach((nd, i) => {
+    const r = Math.floor(i/3), c = i % 3;
+    nd.x = cols[r % 2 === 0 ? c : 2 - c]; nd.y = ys[r];
+    nd.w = 200; nd.h = nd.type === 'decision' ? 110 : 80;
+  });
+  const colorOf = nd => nd.type === 'start' ? '#2BB673' : nd.type === 'end' ? '#E4572E' : nd.type === 'decision' ? '#F59F00' : C[(nd.i) % C.length];
+  let g = '';
+  for (let i = 0; i < n-1; i++){
+    const a = nodes[i], b = nodes[i+1];
+    if (a.y === b.y){
+      const dir = b.x > a.x ? 1 : -1;
+      g += `<line x1="${a.x + dir*a.w/2}" y1="${a.y}" x2="${b.x - dir*b.w/2 - dir*3}" y2="${b.y}" stroke="#4b5d59" stroke-width="3" marker-end="url(#ar)"/>`;
+    } else {
+      g += `<line x1="${a.x}" y1="${a.y + a.h/2}" x2="${b.x}" y2="${b.y - b.h/2 - 3}" stroke="#4b5d59" stroke-width="3" marker-end="url(#ar)"/>`;
+    }
+  }
+  nodes.forEach(nd => {
+    const col = colorOf(nd);
+    if (nd.type === 'decision'){
+      const f = fitText(nd.t, nd.w*0.6, nd.h*0.55, 15, 9);
+      g += `<polygon points="${nd.x},${nd.y - nd.h/2} ${nd.x + nd.w/2},${nd.y} ${nd.x},${nd.y + nd.h/2} ${nd.x - nd.w/2},${nd.y}" fill="${tint(col,.8)}" stroke="${col}" stroke-width="2.5"/>` + svgLines(f.lines, nd.x, nd.y, f.size, darken(col,.55), { weight: 700 });
+    } else if (nd.type === 'start' || nd.type === 'end'){
+      g += nodeBox(nd.x, nd.y, nd.w, nd.h, nd.t, col, { r: 40, fill: col, textColor: '#fff', maxS: 16 });
+    } else {
+      g += nodeBox(nd.x, nd.y, nd.w, nd.h, nd.t, col, { maxS: 16 });
+    }
+    g += `<circle cx="${nd.x - nd.w/2 + 4}" cy="${nd.y - nd.h/2 + 4}" r="12" fill="${darken(col,.2)}"/>` +
+         svgLines([String(nd.i+1)], nd.x - nd.w/2 + 4, nd.y - nd.h/2 + 4, 12, '#fff', { weight: 800 });
+  });
+  return svgWrap(g);
+}
+
+// ── timeline: горизонтальная линия, карточки сверху/снизу ─────
+function svgTimeline(d, C){
+  const ev = (d.events || d.steps || []).slice(0, 7).map(e => typeof e === 'string' ? { date: '', title: e, text: '' } : e);
+  const n = ev.length; if (!n) return '';
+  const ly = 270, x0 = 90, x1 = 710;
+  const step = n > 1 ? (x1 - x0) / (n - 1) : 0;
+  const cw = Math.min(185, Math.max(120, step * 2 - 14)), ch = 170;
+  let g = `<line x1="30" y1="${ly}" x2="770" y2="${ly}" stroke="#4b5d59" stroke-width="5" stroke-linecap="round" marker-end="url(#ar)"/>`;
+  ev.forEach((e, i) => {
+    const x = n > 1 ? x0 + i*step : 400, up = i % 2 === 0, col = C[i % C.length];
+    const cy0 = up ? ly - 28 - ch : ly + 28;
+    const cx0 = Math.min(780 - cw/2, Math.max(20 + cw/2, x));
+    g += `<line x1="${x.toFixed(1)}" y1="${ly}" x2="${x.toFixed(1)}" y2="${up ? ly - 28 : ly + 28}" stroke="${col}" stroke-width="3"/>`;
+    g += `<circle cx="${x.toFixed(1)}" cy="${ly}" r="11" fill="${col}" stroke="#fff" stroke-width="3"/>`;
+    g += `<rect x="${(cx0 - cw/2).toFixed(1)}" y="${cy0}" width="${cw}" height="${ch}" rx="12" fill="${tint(col,.88)}" stroke="${col}" stroke-width="2.5"/>`;
+    g += `<path d="M${(cx0 - cw/2).toFixed(1)},${cy0 + 34} v-22 a12,12 0 0 1 12,-12 h${cw - 24} a12,12 0 0 1 12,12 v22 z" fill="${col}"/>`;
+    const fd = fitText(e.date || '', cw - 12, 26, 16, 10);
+    g += svgLines(fd.lines, cx0.toFixed(1), cy0 + 17, fd.size, '#fff', { weight: 800 });
+    const ft = fitText(plain(e.title || ''), cw - 14, 42, 15, 9);
+    g += svgLines(ft.lines, cx0.toFixed(1), cy0 + 58, ft.size, darken(col,.55), { weight: 800 });
+    if (e.text){
+      const fx = fitText(e.text, cw - 14, ch - 98, 13, 9);
+      g += svgLines(fx.lines, cx0.toFixed(1), cy0 + 100 + (ch - 98 - fx.lines.length*fx.size*1.25)/2 - 6, fx.size, '#334', { weight: 500 });
+    }
+  });
+  return svgWrap(g);
+}
+
+// ── mindmap: центр + ветви слева/справа ───────────────────────
+function svgMindmap(d, C){
+  const br = (d.branches || d.steps || []).slice(0, 6).map(b => typeof b === 'string' ? { title: b, children: [] } : b);
+  const n = br.length; if (!n) return '';
+  const cx = 400, cy = 270;
+  const right = br.filter((_, i) => i % 2 === 0), left = br.filter((_, i) => i % 2 === 1);
+  const ysFor = m => m === 1 ? [270] : m === 2 ? [160, 380] : [85, 270, 455];
+  const bw = 235, bh = 130;
+  let curves = '', boxes = '';
+  const place = (list, side) => {
+    const ys = ysFor(list.length);
+    list.forEach((b, k) => {
+      const idx = br.indexOf(b), col = C[idx % C.length];
+      const bx = side === 'r' ? 785 - bw/2 : 15 + bw/2, by = ys[k];
+      const ex = side === 'r' ? bx - bw/2 : bx + bw/2, sx = side === 'r' ? cx + 100 : cx - 100;
+      curves += `<path d="M${sx},${cy} C${(sx + ex)/2},${cy} ${(sx + ex)/2},${by} ${ex},${by}" fill="none" stroke="${col}" stroke-width="4"/>`;
+      boxes += `<rect x="${bx - bw/2}" y="${by - bh/2}" width="${bw}" height="${bh}" rx="12" fill="${tint(col,.9)}" stroke="${col}" stroke-width="2.5"/>`;
+      boxes += `<path d="M${bx - bw/2},${by - bh/2 + 34} v-22 a12,12 0 0 1 12,-12 h${bw - 24} a12,12 0 0 1 12,12 v22 z" fill="${col}"/>`;
+      const ft = fitText(plain(b.title || ''), bw - 14, 28, 16, 10);
+      boxes += svgLines(ft.lines, bx, by - bh/2 + 17, ft.size, '#fff', { weight: 800 });
+      const kids = (b.children || []).slice(0, 4);
+      const ls = []; kids.forEach(k2 => { const w = wrapText('• ' + strItem(k2), 33); w.forEach((l, li) => ls.push(li ? '  ' + l : l)); });
+      const lines = ls.slice(0, 5);
+      if (lines.length) boxes += svgLines(lines, bx - bw/2 + 12, by - bh/2 + 34 + (bh - 34)/2, 12.5, '#223', { anchor: 'start', weight: 500, lh: 1.3 });
+    });
+  };
+  place(right, 'r'); place(left, 'l');
+  const f = fitText(d.center || '', 170, 70, 20, 11);
+  let g = curves + `<ellipse cx="${cx}" cy="${cy}" rx="105" ry="56" fill="${C[0]}" stroke="${darken(C[0],.3)}" stroke-width="3"/>` + svgLines(f.lines, cx, cy, f.size, '#fff', { weight: 800 }) + boxes;
+  return svgWrap(g);
+}
+
+// ── table ─────────────────────────────────────────────────────
+function svgTable(d, C){
+  const cols = (d.columns || []).slice(0, 5).map(plain);
+  const rows = (d.rows || []).slice(0, 8).map(r => (r || []).slice(0, cols.length).map(plain));
+  if (!cols.length) return '';
+  const x0 = 20, y0 = 20, Wt = 760, maxH = 500, cw = Wt / cols.length;
+  let L;
+  for (let fs = 16; fs >= 9; fs--){
+    const cpl = Math.max(3, Math.floor((cw - 16) / (fs*0.56)));
+    const hdr = cols.map(c => wrapText(c, cpl));
+    const hh = Math.max(...hdr.map(l => l.length)) * fs * 1.25 + 18;
+    const rl = rows.map(r => cols.map((_, i) => wrapText(r[i] ?? '', cpl)));
+    const rh = rl.map(r => Math.max(...r.map(l => l.length)) * fs * 1.25 + 14);
+    L = { fs, hdr, hh, rl, rh };
+    if (hh + rh.reduce((a,b)=>a+b, 0) <= maxH) break;
+  }
+  let g = '', y = y0;
+  cols.forEach((c, i) => {
+    const col = C[i % C.length];
+    g += `<rect x="${x0 + i*cw}" y="${y}" width="${cw}" height="${L.hh}" fill="${col}" stroke="#fff" stroke-width="2"/>` + svgLines(L.hdr[i], x0 + i*cw + cw/2, y + L.hh/2, L.fs, '#fff', { weight: 800 });
+  });
+  y += L.hh;
+  L.rl.forEach((r, ri) => {
+    const h = L.rh[ri];
+    r.forEach((lines, i) => {
+      const col = C[i % C.length];
+      const fill = i === 0 ? tint(col, .82) : (ri % 2 ? tint(C[0], .93) : '#ffffff');
+      g += `<rect x="${x0 + i*cw}" y="${y}" width="${cw}" height="${h}" fill="${fill}" stroke="${tint(C[0], .55)}" stroke-width="1.5"/>` +
+           svgLines(lines, x0 + i*cw + 10, y + h/2, L.fs, '#1d2b29', { anchor: 'start', weight: i === 0 ? 800 : 500 });
+    });
+    y += h;
+  });
+  return svgWrap(g);
+}
+
+// ── infographic: крупные числа в карточках ────────────────────
+function svgInfographic(d, C){
+  let stats = (d.stats || []).slice(0, 6);
+  if (!stats.length && d.steps) stats = d.steps.slice(0, 6).map((t, i) => ({ value: String(i+1), label: strItem(t) }));
+  const n = stats.length; if (!n) return '';
+  const cols = n <= 3 ? n : (n === 4 ? 2 : 3), rows = Math.ceil(n / cols);
+  const top = d.title ? 78 : 24, bottom = d.note ? 62 : 24;
+  const gap = 18, cw = (760 - (cols-1)*gap) / cols, ch = (SV_H - top - bottom - (rows-1)*gap) / rows;
+  let g = '';
+  if (d.title){ const f = fitText(d.title, 740, 44, 26, 14); g += svgLines(f.lines, 400, 44, f.size, darken(C[0], .35), { weight: 800 }); }
+  stats.forEach((s, i) => {
+    const col = C[i % C.length], r = Math.floor(i / cols), c = i % cols;
+    const x = 20 + c*(cw + gap), y = top + r*(ch + gap);
+    g += `<rect x="${x}" y="${y}" width="${cw}" height="${ch}" rx="16" fill="${tint(col,.88)}" stroke="${col}" stroke-width="3"/>`;
+    g += `<rect x="${x}" y="${y}" width="${cw}" height="10" rx="5" fill="${col}"/>`;
+    const fv = fitText(String(s.value ?? ''), cw - 24, ch*0.42, 56, 20);
+    g += svgLines(fv.lines, x + cw/2, y + ch*0.36, fv.size, col, { weight: 800 });
+    const fl = fitText(s.label || '', cw - 28, ch*0.36, 18, 9);
+    g += svgLines(fl.lines, x + cw/2, y + ch*0.74, fl.size, darken(col,.6), { weight: 600 });
+  });
+  if (d.note){ const f = fitText(d.note, 740, 42, 15, 9); g += svgLines(f.lines, 400, SV_H - 32, f.size, '#4b5d59', { weight: 500 }); }
+  return svgWrap(g);
+}
+
+// ── comparison: две колонки + VS ──────────────────────────────
+function svgComparison(d, C){
+  const A = d.left || {}, B = d.right || {};
+  if (!(A.points || A.title) && !(B.points || B.title)) return '';
+  const side = (o, x, col) => {
+    let g = `<rect x="${x}" y="20" width="360" height="500" rx="16" fill="${tint(col,.9)}" stroke="${col}" stroke-width="3"/>`;
+    g += `<path d="M${x},${20 + 64} v-52 a16,16 0 0 1 16,-16 h328 a16,16 0 0 1 16,16 v52 z" fill="${col}"/>`;
+    const ft = fitText(o.title || '', 330, 52, 24, 12);
+    g += svgLines(ft.lines, x + 180, 20 + 32, ft.size, '#fff', { weight: 800 });
+    const pts = (o.points || []).slice(0, 6).map(strItem);
+    const slot = pts.length ? (500 - 64 - 24) / pts.length : 0;
+    pts.forEach((p, i) => {
+      const cy = 20 + 64 + 12 + slot*i + slot/2;
+      g += `<circle cx="${x + 26}" cy="${cy}" r="9" fill="${col}"/>`;
+      const f = fitText(p, 295, slot - 10, 17, 10);
+      g += svgLines(f.lines, x + 46, cy, f.size, '#1d2b29', { anchor: 'start', weight: 500 });
+    });
+    return g;
+  };
+  let g = side(A, 20, C[0]) + side(B, 420, C[3]);
+  g += `<circle cx="400" cy="270" r="30" fill="#fff" stroke="#4b5d59" stroke-width="3.5"/>` + svgLines(['VS'], 400, 270, 20, '#4b5d59', { weight: 800 });
+  return svgWrap(g);
+}
+
+// ── cycle: узлы по эллипсу + дуги со стрелками ────────────────
+function svgCycle(d, C){
+  const steps = (d.steps || []).slice(0, 8).map(strItem);
+  const n = steps.length; if (n < 2) return '';
+  const cx = 400, cy = 270, rx = 275, ry = 180;
+  const ang = i => -Math.PI/2 + i*2*Math.PI/n;
+  const pt = a => [cx + rx*Math.cos(a), cy + ry*Math.sin(a)];
+  let arcs = '', heads = '', nodes = '';
+  for (let i = 0; i < n; i++){
+    const a1 = ang(i), a2 = a1 + 2*Math.PI/n, col = C[(i+1) % C.length];
+    const [x1, y1] = pt(a1), [x2, y2] = pt(a2);
+    arcs += `<path d="M${x1.toFixed(1)},${y1.toFixed(1)} A${rx},${ry} 0 0 1 ${x2.toFixed(1)},${y2.toFixed(1)}" fill="none" stroke="${col}" stroke-width="5"/>`;
+    const m = (a1 + a2)/2, [px, py] = pt(m);
+    let tx = -rx*Math.sin(m), ty = ry*Math.cos(m); const tl = Math.hypot(tx, ty); tx /= tl; ty /= tl;
+    const nx = -ty, ny = tx;
+    heads += `<polygon points="${(px + tx*11).toFixed(1)},${(py + ty*11).toFixed(1)} ${(px - tx*7 + nx*9).toFixed(1)},${(py - ty*7 + ny*9).toFixed(1)} ${(px - tx*7 - nx*9).toFixed(1)},${(py - ty*7 - ny*9).toFixed(1)}" fill="${col}"/>`;
+  }
+  steps.forEach((t, i) => {
+    const [x, y] = pt(ang(i)), col = C[(i+1) % C.length];
+    nodes += nodeBox(x, y, 178, 60, t, col, { maxS: 15 });
+    nodes += `<circle cx="${(x - 89).toFixed(1)}" cy="${(y - 30).toFixed(1)}" r="12" fill="${col}" stroke="#fff" stroke-width="2"/>` + svgLines([String(i+1)], (x - 89).toFixed(1), (y - 30).toFixed(1), 12, '#fff', { weight: 800 });
+  });
+  let g = arcs + heads;
+  if (d.center){ const f = fitText(d.center, 150, 70, 19, 11); g += `<ellipse cx="${cx}" cy="${cy}" rx="95" ry="52" fill="${C[0]}" stroke="${darken(C[0],.3)}" stroke-width="3"/>` + svgLines(f.lines, cx, cy, f.size, '#fff', { weight: 800 }); }
+  return svgWrap(g + nodes);
+}
+
+// ── hierarchy: дерево сверху вниз ─────────────────────────────
+function svgHierarchy(d, C){
+  let root = d.root;
+  if (!root && d.center) root = { text: d.center, children: (d.steps || []).map(t => ({ text: strItem(t) })) };
+  if (!root) return '';
+  const norm = n => typeof n === 'string' ? { text: n, children: [] } : { text: n.text || n.title || '', children: (n.children || []).map(norm) };
+  root = norm(root);
+  (function cut(n, dp){ if (dp >= 2) n.children = []; else n.children = n.children.slice(0, dp === 0 ? 6 : 3); n.children.forEach(c => cut(c, dp+1)); })(root, 0);
+  const countLeaves = n => n.children.length ? n.children.reduce((a, c) => a + countLeaves(c), 0) : 1;
+  if (countLeaves(root) > 9) root.children.forEach(c => { c.children = c.children.slice(0, 2); });
+  let next = 0, maxD = 0;
+  (function lay(n, dp){
+    n.d = dp; maxD = Math.max(maxD, dp);
+    if (!n.children.length) n.k = next++;
+    else { n.children.forEach(c => lay(c, dp+1)); n.k = (n.children[0].k + n.children[n.children.length-1].k) / 2; }
+  })(root, 0);
+  const L = Math.max(1, next), slot = 760 / L, D = maxD + 1;
+  const yAt = dp => D === 1 ? 270 : (D === 2 ? 130 : 90) + dp * ((D === 2 ? 400 : 450) - (D === 2 ? 130 : 90)) / (D - 1);
+  const bh = 62;
+  const wOf = n => n.d === 0 ? Math.min(220, Math.max(150, slot*1.6)) : Math.max(70, Math.min(175, slot - 10));
+  let edges = '', boxes = '';
+  (function draw(n, br){
+    const x = 20 + (n.k + 0.5) * slot, y = yAt(n.d);
+    n.children.forEach((c, i) => {
+      const cb = n.d === 0 ? i : br, col = C[cb % C.length];
+      const cxp = 20 + (c.k + 0.5) * slot, cyp = yAt(c.d), my = (y + cyp)/2;
+      edges += `<path d="M${x.toFixed(1)},${y + bh/2} V${my} H${cxp.toFixed(1)} V${cyp - bh/2}" fill="none" stroke="${col}" stroke-width="3.5"/>`;
+      draw(c, cb);
+    });
+    const col = n.d === 0 ? C[0] : C[br % C.length];
+    if (n.d === 0) boxes += nodeBox(x, y, wOf(n), bh, n.text, col, { fill: col, textColor: '#fff', maxS: 18 });
+    else if (n.d === 1) boxes += nodeBox(x, y, wOf(n), bh, n.text, col, { fill: col, textColor: '#fff', maxS: 15 });
+    else boxes += nodeBox(x, y, wOf(n), bh, n.text, col, { maxS: 14 });
+  })(root, 0);
+  return svgWrap(edges + boxes);
+}
+
+function buildSchemeSVG(mode, d){
+  const C = schemeColors();
+  try {
+    switch (mode){
+      case 'diagram': return svgDiagram(d, C);
+      case 'flowchart': return svgFlowchart(d, C);
+      case 'timeline': return svgTimeline(d, C);
+      case 'mindmap': return svgMindmap(d, C);
+      case 'table': return svgTable(d, C);
+      case 'infographic': return svgInfographic(d, C);
+      case 'comparison': return svgComparison(d, C);
+      case 'cycle': return svgCycle(d, C);
+      case 'hierarchy': return svgHierarchy(d, C);
+    }
+  } catch (e) { console.warn('scheme error', mode, e); }
+  return '';
+}
+
+function renderShatovHTML(data){
+  if (!data || !data.blocks) return '';
+  const pal = paletteForRender();
+  let html = `<div class="vg-shatov"><div class="vg-shatov-header"><div class="vg-shatov-title">📋 ${esc(data.title||'')}</div></div><div class="vg-shatov-grid">`;
+  (data.blocks||[]).forEach(b=>{
+    html += `<div class="vg-shatov-block"><div class="vg-shatov-num">${esc(b.num||'')}</div><div class="vg-shatov-key">${esc(b.key||'')}</div><ul class="vg-shatov-facts">${(b.facts||[]).map(f=>`<li>${esc(f)}</li>`).join('')}</ul></div>`;
+  });
+  return html + `</div></div>`;
+}
+
+// Единая точка: что показать справа на слайде
+function buildVisualHTML(s){
+  if (s.manual_img) return `<img src="${s.manual_img}" alt="">`;
+  const mode = s.visual_mode;
+  if (!mode || mode === 'photo') return s.visual_url ? `<img src="${s.visual_url}" alt="">` : '';
+  if (mode === 'shatov') return renderShatovHTML(s.visual_data);
+  const svg = buildSchemeSVG(mode, s.visual_data || {});
+  return svg ? `<img src="${svgToUri(svg)}" alt="">` : '';
+}
+
+
+function render(problems){
+  const box = document.getElementById('outputBox');
+  const pal = paletteForRender();
+  const font = getUserFont();
+  const bgStyle = state.bgImage ? `background-image:url(${state.bgImage});` : '';
+
+  if (!state.slides.length) { box.innerHTML = '<div class="empty-hint">Нет слайдов</div>'; return; }
+
+  let html = `<div style="font-family:'${esc(font)}',sans-serif">`;
+  
+  html += state.slides.map((s, idx)=>{
+    const vMode = s.visual_mode || 'photo';
+    const visualHTML = buildVisualHTML(s);
+
+    const fs = s.fontSize || 1;
+    const lh = s.lineHeight || 1.4;
+    const align = s.textAlign || 'left';
+    const imgW = s.imgWidth || ((SVG_MODES.includes(vMode) || vMode === 'shatov') ? 50 : 42);
+    
+    // Позиции
+    const tx = s.textX || 0;
+    const ty = s.textY || 0;
+    const ix = s.imgX || 0;
+    const iy = s.imgY || 0;
+
+    return `<div class="slide-card" data-idx="${idx}">
+      <div class="slide-head">
+        <span class="slide-n">${esc(s.n)}</span>
+        <span class="badge">${esc(s.layout||'list')}</span>
+        <span class="badge fn">${esc(vMode)}</span>
+        ${s.credit ? `<span class="badge" title="Источник и лицензия">📷 ${esc(s.credit)}</span>` : ''}
+      </div>
+      
+      <div class="slide-body" data-idx="${idx}" style="${bgStyle}">
+        <div class="slide-content">
+          
+          <!-- Текстовый блок -->
+          <div class="draggable-obj text-block" style="left:5%; top:10%; font-size: ${fs}em; line-height: ${lh}; text-align: ${align}; transform: translate(${tx}px, ${ty}px);" data-idx="${idx}" data-type="text">
+            <div class="text-controls">
+              <div class="ctrl-group">
+                <button class="ctrl-btn" onclick="changeFontSize(${idx}, 0.1)" title="Увеличить шрифт">A+</button>
+                <button class="ctrl-btn" onclick="changeFontSize(${idx}, -0.1)" title="Уменьшить шрифт">A-</button>
+              </div>
+              <div class="ctrl-group">
+                <button class="ctrl-btn" onclick="changeLineHeight(${idx}, 0.1)" title="Больше интервал">↕+</button>
+                <button class="ctrl-btn" onclick="changeLineHeight(${idx}, -0.1)" title="Меньше интервал">↕-</button>
+              </div>
+              <div class="ctrl-group">
+                <button class="ctrl-btn ${align==='left'?'active':''}" onclick="changeAlign(${idx}, 'left')" title="По левому краю">⬅</button>
+                <button class="ctrl-btn ${align==='center'?'active':''}" onclick="changeAlign(${idx}, 'center')" title="По центру">⬍</button>
+                <button class="ctrl-btn ${align==='right'?'active':''}" onclick="changeAlign(${idx}, 'right')" title="По правому краю">➡</button>
+                <button class="ctrl-btn ${align==='justify'?'active':''}" onclick="changeAlign(${idx}, 'justify')" title="По ширине">↔</button>
+              </div>
+            </div>
+            
+            <div class="slide-text">
+              <div class="slide-title" contenteditable="true" data-field="title" data-idx="${idx}">${parseMarkdown(s.title)}</div>
+              ${s.big_text ? `<div class="slide-big" contenteditable="true" data-field="big_text" data-idx="${idx}" style="color:#${pal.accent}">${parseMarkdown(s.big_text)}</div>` : ''}
+              ${s.bullets?.length ? `<ul>${s.bullets.map((b,bi)=>`<li contenteditable="true" data-field="bullets" data-bi="${bi}" data-idx="${idx}">${parseMarkdown(b)}</li>`).join('')}</ul>` : ''}
+            </div>
+          </div>
+
+          <!-- Визуальный блок -->
+          ${visualHTML ? `<div class="draggable-obj img-block" style="right:5%; top:10%; width: ${imgW}%; transform: translate(${ix}px, ${iy}px);" data-idx="${idx}" data-type="img">
+            <div class="img-controls">
+              ${s.visual_data?.query_en ? `<button class="img-btn" onclick="reimage(${idx})" title="Подобрать другую">🔄</button>` : ''}
+              <button class="img-btn" onclick="openImgModal(${idx})" title="Заменить">🖼</button>
+              <button class="img-btn del" onclick="deleteImage(${idx})" title="Удалить">🗑</button>
+            </div>
+            ${visualHTML}
+            <div class="resize-handle tl"></div>
+            <div class="resize-handle tr"></div>
+            <div class="resize-handle bl"></div>
+            <div class="resize-handle br"></div>
+          </div>` : ''}
+
+        </div>
+      </div>
+      
+      <details class="notes" style="padding:0.5rem 1rem;font-size:0.8rem;border-top:1px solid #eee;">
+        <summary>🎤 Заметки</summary>
+        <p style="margin-top:0.4rem;">${esc(s.speaker_notes||'')}</p>
+      </details>
+    </div>`;
+  }).join('');
+  
+  html += `</div>`;
+  box.innerHTML = html;
+
+  // ─── DRAG & DROP (ПЕРЕМЕЩЕНИЕ) ───
+  interact('.draggable-obj').draggable({
+    ignoreFrom: 'button, [contenteditable], .resize-handle',
+    inertia: true,
+    listeners: {
+      move (event) {
+        const target = event.target;
+        const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+        const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+        target.style.transform = `translate(${x}px, ${y}px)`;
+        target.setAttribute('data-x', x);
+        target.setAttribute('data-y', y);
+        
+        const idx = parseInt(target.dataset.idx);
+        const type = target.dataset.type;
+        if (type === 'text') {
+          state.slides[idx].textX = x;
+          state.slides[idx].textY = y;
+        } else if (type === 'img') {
+          state.slides[idx].imgX = x;
+          state.slides[idx].imgY = y;
+        }
+      }
+    }
+  });
+
+  // ─── РЕСАЙЗ КАРТИНОК ───
+  interact('.resize-handle').draggable({
+    modifiers: [ interact.modifiers.aspectRatio({ ratio: 'preserve' }) ],
+    inertia: true,
+    listeners: {
+      move (event) {
+        const handle = event.target;
+        const block = handle.parentElement;
+        const idx = parseInt(block.dataset.idx);
+        
+        const parentRect = block.parentElement.getBoundingClientRect();
+        const blockRect = block.getBoundingClientRect();
+        
+        const isLeft = handle.classList.contains('tl') || handle.classList.contains('bl');
+        let newWidthPx = isLeft ? (blockRect.right - event.clientX) : (event.clientX - blockRect.left);
+        
+        let newPercent = (newWidthPx / parentRect.width) * 100;
+        newPercent = Math.max(15, Math.min(90, newPercent));
+        
+        block.style.width = newPercent + '%';
+        state.slides[idx].imgWidth = newPercent;
+      }
+    }
+  });
+
+  // ─── ПРИЕМ КАРТИНОК НА СЛАЙД ───
+  box.querySelectorAll('.slide-body').forEach(body => {
+    body.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'copy';
+      body.style.boxShadow = 'inset 0 0 20px var(--teal)';
+    });
+    body.addEventListener('dragleave', () => { body.style.boxShadow = 'none'; });
+    body.addEventListener('drop', (e) => {
+      e.preventDefault();
+      body.style.boxShadow = 'none';
+      
+      const imgData = e.dataTransfer.getData('image-data');
+      if (!imgData) return;
+
+      const idx = parseInt(body.dataset.idx);
+      state.slides[idx].manual_img = imgData;
+      state.slides[idx].visual_mode = null;
+      render([]);
+      showToast('✅ Картинка вставлена!', 'ok');
+    });
+  });
+
+  // ─── РЕДАКТИРОВАНИЕ ТЕКСТА ───
+  box.querySelectorAll('[contenteditable]').forEach(el=>{
+    el.addEventListener('blur', ()=>{
+      const idx = parseInt(el.dataset.idx);
+      const field = el.dataset.field;
+      const s = state.slides[idx];
+      if (!s) return;
+      const text = el.textContent.trim(); 
+      if (field === 'title') s.title = text;
+      else if (field === 'big_text') s.big_text = text;
+      else if (field === 'bullets'){
+        const bi = parseInt(el.dataset.bi);
+        s.bullets[bi] = text;
+      }
+    });
+  });
+}
+
+function changeFontSize(idx, delta) {
+  const s = state.slides[idx];
+  s.fontSize = Math.max(0.5, Math.min(2.5, (s.fontSize || 1) + delta));
+  render([]);
+}
+
+function changeLineHeight(idx, delta) {
+  const s = state.slides[idx];
+  s.lineHeight = Math.max(0.8, Math.min(2.5, (s.lineHeight || 1.4) + delta));
+  render([]);
+}
+
+function changeAlign(idx, align) {
+  const s = state.slides[idx];
+  s.textAlign = align;
+  render([]);
+}
+
+function deleteImage(idx) {
+  const s = state.slides[idx];
+  s.manual_img = null;
+  s.visual_url = null;
+  s.visual_mode = null;
+  render([]);
+}
+
+// ══════════════════════════════════════════════════════════════
+// МОДАЛКА ЗАМЕНЫ КАРТИНКИ
+// ══════════════════════════════════════════════════════════════
+function openImgModal(idx) {
+  currentImgIdx = idx;
+  document.getElementById('imgModal').classList.add('on');
+  document.getElementById('imgPreviewBox').innerHTML = '';
+  document.getElementById('slideImgFile').value = '';
+}
+function closeImgModal() {
+  document.getElementById('imgModal').classList.remove('on');
+  currentImgIdx = -1;
+}
+document.getElementById('slideImgFile').addEventListener('change', (e)=>{
+  const f = e.target.files[0]; if (!f) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    document.getElementById('imgPreviewBox').innerHTML = `<img src="${reader.result}" style="max-width:100%;border-radius:.6rem;">`;
+  };
+  reader.readAsDataURL(f);
+});
+document.getElementById('applyImgBtn').addEventListener('click', ()=>{
+  const img = document.getElementById('imgPreviewBox').querySelector('img');
+  if (!img || currentImgIdx < 0) return;
+  state.slides[currentImgIdx].manual_img = img.src;
+  state.slides[currentImgIdx].visual_mode = null;
+  closeImgModal();
+  render([]);
+});
+
+// ══════════════════════════════════════════════════════════════
+// ЭКСПОРТ В PPTX
+// ══════════════════════════════════════════════════════════════
+async function exportPptx(){
+  if (!state.slides.length) return;
+  setStatus('⏳ Подготовка к экспорту...', 'loading');
+  
+  const p = new PptxGenJS();
+  p.layout = 'LAYOUT_WIDE';
+  const pal = paletteForRender();
+  const FONT = getUserFont();
+  const K = 1200 / (document.querySelector('.slide-body')?.offsetWidth || 1200);
+
+  async function renderToImage(html, width=1200, height=675) {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = `position:fixed;left:-9999px;top:0;width:${width}px;height:${height}px;background:#fff;padding:20px;box-sizing:border-box;font-family:'${FONT}',sans-serif;overflow:hidden;`;
+    wrap.innerHTML = `<div style="position:relative;width:100%;height:100%;">${html}</div>`;
+    document.body.appendChild(wrap);
+    try {
+      const canvas = await html2canvas(wrap, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
+      return canvas.toDataURL('image/png');
+    } finally {
+      document.body.removeChild(wrap);
+    }
+  }
+
+  for (let i = 0; i < state.slides.length; i++) {
+    const s = state.slides[i];
+    const sl = p.addSlide();
+    
+    let slideHtml = '';
+    
+    if (state.bgImage) slideHtml += `<div style="position:absolute;inset:0;background-image:url(${state.bgImage});background-size:cover;background-position:center;"></div>`;
+    slideHtml += `<div style="position:absolute;inset:0;background:rgba(255,255,255,0.7);"></div>`; 
+
+    // Текст
+    const align = s.textAlign || 'left';
+    const lh = s.lineHeight || 1.4;
+    const tx = s.textX || 0;
+    const ty = s.textY || 0;
+    
+    slideHtml += `<div style="position:absolute;left:5%;top:10%;width:40%;text-align:${align};line-height:${lh};font-size:${s.fontSize||1}em;transform:translate(${tx*K}px,${ty*K}px);">`;
+    slideHtml += `<div style="font-size:2em;font-weight:800;color:#${pal.accent};margin-bottom:15px;">${parseMarkdown(s.title)}</div>`;
+    if (s.big_text) slideHtml += `<div style="font-size:1.5em;font-weight:700;margin-bottom:15px;">${parseMarkdown(s.big_text)}</div>`;
+    if (s.bullets?.length) slideHtml += `<ul style="font-size:1.1em;padding-left:20px;">${s.bullets.map(b=>`<li>${parseMarkdown(b)}</li>`).join('')}</ul>`;
+    slideHtml += `</div>`;
+
+    // Визуал (фото / SVG-схема / опорный конспект)
+    const imgW = s.imgWidth || ((SVG_MODES.includes(s.visual_mode) || s.visual_mode === 'shatov') ? 50 : 42);
+    const vis = buildVisualHTML(s);
+    if (vis) slideHtml += `<div style="position:absolute;right:5%;top:10%;width:${imgW}%;transform:translate(${(s.imgX||0)*K}px,${(s.imgY||0)*K}px);">${vis.replace('<img ', '<img style="width:100%;display:block;border-radius:10px;" ')}</div>`;
+
+    const imgData = await renderToImage(slideHtml, 1200, 675);
+    sl.background = { color: 'FFFFFF' };
+    if (imgData) sl.addImage({ data: imgData, x:0, y:0, w:13.33, h:7.5 });
+    
+    sl.addNotes(s.speaker_notes||'');
+  }
+
+  const name = (val('manualTopic')||'presentation').replace(/[^\p{L}\p{N}]+/gu,'_');
+  await p.writeFile({ fileName: `${name}.pptx` });
+  setStatus('✅ PPTX сохранён!', 'ok');
+}
+
+// ══════════════════════════════════════════════════════════════
+// ИНИЦИАЛИЗАЦИЯ
+// ══════════════════════════════════════════════════════════════
+document.getElementById('processBtn').addEventListener('click', generate);
+document.getElementById('pptxBtn').addEventListener('click', exportPptx);
+document.getElementById('clearBtn').addEventListener('click', ()=>{
+  state.slides = [];
+  document.getElementById('outputBox').innerHTML = '<div class="empty-hint">Очищено</div>';
+  setStatus('');
+});
+document.getElementById('subjectSelect').addEventListener('change', ()=>{ updateTopicSelect(); syncTopic(); });
+document.getElementById('topicSelect').addEventListener('change', syncTopic);
+document.getElementById('fontSelect').addEventListener('change', ()=>{ if(state.slides.length) render([]); });
+
+// Старт
+buildSourceUI();
+updateTopicSelect();
+syncTopic();
+</script>
+</body>
+</html>

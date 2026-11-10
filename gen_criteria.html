@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Критерии и оценка к заданию</title>
+<style>
+:root{
+  --t50:#f0faf9; --t100:#d9f2ef; --t200:#b2e5e0; --t300:#7fd2ca; --t500:#14a89c; --t600:#0e8b81; --t700:#0b6f67; --t900:#0a3d39;
+  --ink:#143331; --muted:#5f7a78; --line:#dbe9e7; --bg:#f5fbfa; --card:#ffffff;
+  --bad:#b4401f; --bad-bg:#fdebe4; --warn:#8a6100; --warn-bg:#fff3d1; --ok:#0b6f67; --ok-bg:#dff5f1;
+  --r:14px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:20px 16px 80px}
+header.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+.logo{width:42px;height:42px;border-radius:12px;background:var(--t600);display:grid;place-items:center;color:#fff;flex:none}
+.logo svg{width:24px;height:24px}
+h1{font-size:22px;margin:0;font-weight:650;letter-spacing:-.01em;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sub{color:var(--muted);margin:0 0 18px;font-size:14px}
+.spacer{flex:1}
+.api-status{display:inline-block;padding:4px 14px;border-radius:30px;font-size:.7rem;font-weight:600;letter-spacing:0}
+.api-status.ok{background:#ddf3ef;color:#1e6b6b}
+.api-status.err{background:#fde8e5;color:#c2412c}
+.nav{position:sticky;top:0;z-index:5;background:rgba(245,251,250,.92);backdrop-filter:blur(6px);padding:8px 0;margin:0 0 14px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+.nav a{font-size:13px;color:var(--muted);text-decoration:none;padding:5px 11px;border-radius:99px;border:1px solid transparent}
+.nav a b{font-weight:600;color:var(--t700);margin-right:4px}
+.nav a.on{background:var(--t100);color:var(--t900);border-color:var(--t200)}
+.nav a.off{opacity:.45;pointer-events:none}
+section.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin-bottom:16px}
+section.card[hidden]{display:none}
+.card h2{font-size:17px;margin:0 0 4px;font-weight:650;display:flex;align-items:center;gap:10px}
+.card h2 .n{width:26px;height:26px;border-radius:50%;background:var(--t100);color:var(--t700);font-size:13px;display:grid;place-items:center;font-weight:650;flex:none}
+.hint{color:var(--muted);font-size:13.5px;margin:0 0 14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:#fff;color:var(--ink);padding:7px 14px;border-radius:99px;cursor:pointer;font:inherit;font-size:14px}
+.chip:hover{border-color:var(--t300)}
+.chip.on{background:var(--t600);border-color:var(--t600);color:#fff}
+label.l{display:block;font-size:12.5px;color:var(--muted);margin:0 0 4px;font-weight:550}
+input[type=text],input[type=number],select,textarea{width:100%;font:inherit;font-size:14px;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 10px;outline:none;transition:border-color .15s,box-shadow .15s}
+textarea{resize:vertical;min-height:64px;line-height:1.45}
+input:focus,select:focus,textarea:focus{border-color:var(--t500);box-shadow:0 0 0 3px rgba(20,168,156,.15)}
+.btn{font:inherit;font-size:14px;font-weight:550;border:1px solid var(--t600);background:var(--t600);color:#fff;padding:9px 18px;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.btn:hover{background:var(--t700)}
+.btn:disabled{opacity:.55;cursor:default}
+.btn.ghost{background:#fff;color:var(--t700);border-color:var(--t200)}
+.btn.ghost:hover{background:var(--t50)}
+.btn.sm{padding:5px 11px;font-size:13px;border-radius:8px}
+.btn.link{border:none;background:none;color:var(--t700);padding:4px 6px}
+.btn.link:hover{text-decoration:underline;background:none}
+.spin{width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite}
+.btn.ghost .spin{border-color:var(--t200);border-top-color:var(--t600)}
+@keyframes sp{to{transform:rotate(360deg)}}
+.zones{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:720px){.zones{grid-template-columns:1fr}}
+.zone{border:1.5px dashed var(--t300);border-radius:12px;padding:14px;background:var(--t50)}
+.zone.drag{background:var(--t100);border-style:solid}
+.zone h3{margin:0 0 2px;font-size:14.5px}
+.zone p{margin:0 0 10px;font-size:12.5px;color:var(--muted)}
+.files{display:flex;flex-direction:column;gap:5px;margin:8px 0}
+.file{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:5px 8px;font-size:13px}
+.file .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file .st{font-size:12px;color:var(--muted)}
+.file .st.err{color:var(--bad)}
+.file button{border:none;background:none;cursor:pointer;color:var(--muted);font-size:16px;line-height:1}
+.zone textarea{margin-top:6px;background:#fff}
+.msg{border-radius:10px;padding:9px 12px;font-size:13.5px;margin:10px 0}
+.msg.err{background:var(--bad-bg);color:var(--bad)}
+.msg.info{background:var(--t50);color:var(--t900);border:1px solid var(--t100)}
+.msg.warn{background:var(--warn-bg);color:var(--warn)}
+.q{border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:12px;background:#fff}
+.q.autoerr{border-color:#f0c4b4}
+.qh{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.qn{width:30px;height:30px;border-radius:9px;background:var(--t600);color:#fff;display:grid;place-items:center;font-weight:650;flex:none}
+.qh .f{flex:0 0 auto}
+.qh select{width:auto;padding:5px 8px;font-size:13px}
+.qh input[type=number]{width:74px;padding:5px 8px;font-size:13px}
+.pts{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.badge{font-size:12px;padding:2px 9px;border-radius:99px;background:var(--t100);color:var(--t900);white-space:nowrap}
+.badge.warn{background:var(--warn-bg);color:var(--warn)}
+.badge.bad{background:var(--bad-bg);color:var(--bad)}
+.badge.ok{background:var(--ok-bg);color:var(--ok)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:720px){.g2{grid-template-columns:1fr}}
+.crit{display:grid;grid-template-columns:1fr 78px 28px;gap:8px;margin-bottom:6px;align-items:start}
+.crit.chk{grid-template-columns:1fr 70px 70px}
+.crit .t{font-size:14px;padding:4px 0}
+.sum{font-size:13px;margin-top:4px}
+.sum.bad{color:var(--bad)} .sum.ok{color:var(--ok)}
+.x{border:none;background:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;padding:4px}
+.x:hover{color:var(--bad)}
+.errs{margin:8px 0 0;padding:0;list-style:none}
+.errs li{font-size:13.5px;padding:6px 10px;border-radius:8px;margin-bottom:5px}
+.errs li.essential{background:var(--bad-bg)} .errs li.minor{background:var(--warn-bg)}
+.errs li b{font-weight:650}
+.ans{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:14px}
+mark.essential{background:#ffc9b6;color:#5a1d0a;border-radius:3px;padding:0 2px;text-decoration:underline wavy #b4401f}
+mark.minor{background:#ffe6a3;color:#4f3700;border-radius:3px;padding:0 2px;text-decoration:underline dotted #8a6100}
+.qtext{white-space:pre-wrap}
+.total{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:12px 0}
+.stat{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--t50)}
+.stat .v{font-size:26px;font-weight:700;color:var(--t700);letter-spacing:-.02em;line-height:1.15}
+.stat .k{font-size:12.5px;color:var(--muted)}
+.stat.big{background:var(--t600);border-color:var(--t600)} .stat.big .v,.stat.big .k{color:#fff}
+table.t{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px}
+table.t th,table.t td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+table.t th{color:var(--muted);font-weight:550;font-size:12.5px}
+table.t tr.cur td{background:var(--t100);font-weight:600}
+details{margin-top:12px} summary{cursor:pointer;color:var(--t700);font-weight:550;font-size:14px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.small{font-size:12.5px;color:var(--muted)}
+#printArea{display:none}
+
+/* ---------- Кнопка «Назад» (как в chain_mez.html) ---------- */
+.back-btn-fixed {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  padding: 10px 22px;
+  background: #1f9a8d;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 12px;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(23,99,91,0.25);
+  transition: background .15s, transform .1s;
+  z-index: 100;
+  font-family: 'Raleway', sans-serif;
+}
+.back-btn-fixed:hover {
+  background: #17635b;
+  transform: translateY(-2px);
+}
+
+@media print{
+  body{background:#fff}
+  .wrap{display:none!important}
+  #printArea{display:block!important;font-size:12pt}
+  #printArea table{border-collapse:collapse;width:100%;margin:6pt 0}
+  #printArea th,#printArea td{border:1px solid #777;padding:4pt 6pt;text-align:left;vertical-align:top;font-size:10.5pt}
+  #printArea h1{font-size:16pt} #printArea h2{font-size:13pt;margin-top:14pt}
+  .back-btn-fixed{display:none!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 17h8"/></svg></div>
+    <div>
+      <h1>Критерии и оценка к заданию <span id="apiStatusBadge" class="api-status err">🔴 API не найден</span></h1>
+    </div>
+    <div class="spacer"></div>
+  </header>
+  <p class="sub">Загрузите задание (и работу ученика) — получите сетку баллов, проверку по ключу и отметку по нормам Минобразования РБ.</p>
+
+  <nav class="nav" id="nav">
+    <a href="#s1" data-s="1" class="on"><b>1</b>Загрузка</a>
+    <a href="#s2" data-s="2" class="off"><b>2</b>Задания</a>
+    <a href="#s3" data-s="3" class="off"><b>3</b>Сетка баллов</a>
+    <a href="#s4" data-s="4" class="off"><b>4</b>Проверка</a>
+    <a href="#s5" data-s="5" class="off"><b>5</b>Итог</a>
+  </nav>
+
+  <!-- 1 -->
+  <section class="card" id="s1">
+    <h2><span class="n">1</span>Что оцениваем</h2>
+    <p class="hint">Выберите предмет и загрузите материалы: фото, PDF, Word (.docx) или вставьте текст.</p>
+    <div class="chips" id="subjChips" style="margin-bottom:14px">
+      <button class="chip on" data-v="chem">Химия</button>
+      <button class="chip" data-v="bio">Биология</button>
+      <button class="chip" data-v="geo">География</button>
+    </div>
+    <div class="zones">
+      <div class="zone" id="zoneTask" data-zone="task">
+        <h3>Задание</h3>
+        <p>Фото, скан, PDF, .docx или текст</p>
+        <button class="btn ghost sm" data-pick="task">Выбрать файлы</button>
+        <div class="files" id="filesTask"></div>
+        <textarea id="txtTask" rows="4" placeholder="…или вставьте текст задания"></textarea>
+      </div>
+      <div class="zone" id="zoneWork" data-zone="work">
+        <h3>Работа ученика <span class="small">(необязательно)</span></h3>
+        <p>Если нужна проверка — загрузите ответы ученика</p>
+        <button class="btn ghost sm" data-pick="work">Выбрать файлы</button>
+        <div class="files" id="filesWork"></div>
+        <textarea id="txtWork" rows="4" placeholder="…или вставьте текст работы ученика"></textarea>
+      </div>
+    </div>
+    <input type="file" id="fileTask" multiple accept="image/*,.pdf,.docx,.txt,.md,.csv" hidden>
+    <input type="file" id="fileWork" multiple accept="image/*,.pdf,.docx,.txt,.md,.csv" hidden>
+    <details style="margin-top:12px">
+      <summary>Есть отдельный ключ ответов</summary>
+      <textarea id="txtKey" rows="3" style="margin-top:8px" placeholder="Например: 1–3; 2–135; 3–Fe + 2HCl → FeCl₂ + H₂↑"></textarea>
+    </details>
+    <div class="toolbar">
+      <button class="btn" id="btnAnalyze">Распознать и разобрать задание</button>
+    </div>
+    <div id="msg1"></div>
+  </section>
+
+  <!-- 2 -->
+  <section class="card" id="s2" hidden>
+    <h2><span class="n">2</span>Задания и баллы</h2>
+    <p class="hint">ИИ определил тип и уровень каждого задания. Проверьте, поправьте ключ и баллы.</p>
+    <div id="structInfo"></div>
+    <div id="qList"></div>
+    <div class="toolbar">
+      <button class="btn" id="btnCriteria">Составить сетку оценивания (ИИ)</button>
+      <button class="btn ghost" id="btnOfficial" title="Уровни по порядку: 5 заданий = I–V, 10 заданий = по два на уровень">Структура по методичке</button>
+      <button class="btn ghost" id="btnAddQ">+ Задание</button>
+    </div>
+    <div id="msg2"></div>
+  </section>
+
+  <!-- 3 -->
+  <section class="card" id="s3" hidden>
+    <h2><span class="n">3</span>Сетка оценивания</h2>
+    <p class="hint">Баллы за каждый элемент ответа. Сумма по заданию должна равняться максимуму.</p>
+    <div id="critList"></div>
+    <div class="toolbar">
+      <button class="btn" id="btnCopy">Копировать</button>
+      <button class="btn ghost" id="btnDoc">Скачать для Word</button>
+      <button class="btn ghost" id="btnPrint">Печать / PDF</button>
+      <button class="btn ghost" id="btnAttach" title="Передать сетку в ваш тест или ассистент">Прикрепить к тесту</button>
+    </div>
+    <div id="msg3"></div>
+  </section>
+
+  <!-- 4 -->
+  <section class="card" id="s4" hidden>
+    <h2><span class="n">4</span>Проверка работы</h2>
+    <p class="hint">Тесты проверяются по ключу сразу. В развёрнутых ответах ИИ подсвечивает ошибки; баллы снижаются по нормам: существенная ошибка — не менее чем на 50%, несущественная — не менее чем на 10%.</p>
+    <div class="row" style="margin-bottom:6px">
+      <div style="flex:1;min-width:200px"><label class="l">Ученик (необязательно)</label><input type="text" id="pupil" placeholder="Фамилия, класс"></div>
+      <label class="small" style="display:flex;gap:6px;align-items:center;margin-top:18px"><input type="checkbox" id="chkPenalty" checked> Снижать баллы за ошибки по нормам</label>
+    </div>
+    <div id="checkList"></div>
+    <div class="toolbar">
+      <button class="btn" id="btnCheck">Проверить работу</button>
+    </div>
+    <div id="msg4"></div>
+  </section>
+
+  <!-- 5 -->
+  <section class="card" id="s5" hidden>
+    <h2><span class="n">5</span>Итог и шкала</h2>
+    <div id="resultBox"></div>
+    <details id="refBox">
+      <summary>Нормы оценки (Минобразования РБ, 2022)</summary>
+      <div id="refInner" class="small" style="margin-top:8px"></div>
+    </details>
+  </section>
+
+  <p class="small">ИИ может ошибаться: окончательное решение об отметке остаётся за учителем. Все баллы и ключи можно править вручную.</p>
+</div>
+<a href="index.html" class="back-btn-fixed">Назад</a>
+<div id="printArea"></div>
+
+
+<script>
+// ========== API KEY (Как в gen_pres.html) ==========
+const API_KEY_STORAGE_KEY = 'gen_api_key';
+function getApiKey(){
+  let k = (localStorage.getItem(API_KEY_STORAGE_KEY) || '').trim();
+  k = k.replace(/^["'«»""]+|["'«»""]+$/g, '');
+  return k.replace(/[^\x21-\x7E]/g, '');
+}
+if (!getApiKey()) { window.location.href = 'index.html'; }
+
+function updateApiStatus(){
+  const badge = document.getElementById('apiStatusBadge');
+  const key = getApiKey();
+  if (key && key.length > 8){ badge.textContent = '✅ API подключён'; badge.className = 'api-status ok'; }
+  else { badge.textContent = '🔴 API не найден'; badge.className = 'api-status err'; }
+}
+</script>
+
+<script>
+(function(){
+'use strict';
+const $ = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ------------------------- Справочные данные ------------------------- */
+const SUBJ = {
+  chem:{name:'Химия', exp:'Опыт / практическая работа', spec:
+    'Типичные задания: распознавание веществ и явлений, составление формул и уравнений реакций, цепочки превращений, расчётные задачи (по формулам, по уравнениям), лабораторные опыты и описание наблюдений.',
+    essential:'Существенные ошибки — свидетельствуют, что учащийся не усвоил основной материал, не умеет оперировать им, применять при выполнении химического эксперимента и решении задач (например, неверные формулы веществ, неверный ход решения расчётной задачи, неверный вывод из опыта).',
+    minor:'Несущественные ошибки — ошибки в написании химических терминов, отдельные ошибки вычислительного характера, небрежное выполнение химических записей.', official:true},
+  bio:{name:'Биология', exp:'Опыт / практическая работа', spec:
+    'Типичные задания: биологические термины и понятия, объекты и процессы, сравнение, работа с рисунками и схемами, биологические (генетические) задачи, лабораторные и практические работы.',
+    essential:'Существенные ошибки — свидетельствуют, что учащийся не усвоил основной программный материал, не умеет оперировать им и применять в ходе лабораторных и практических работ, решения биологических задач.',
+    minor:'Несущественные ошибки — оговорки и незначительные упущения; ошибки в написании биологических терминов; описки; отдельные вычислительные ошибки, не приводящие к абсурдному результату; отдельные нарушения последовательности операций, не приводящие к неправильному результату.', official:true},
+  geo:{name:'География', exp:'Работа с картой / данными', spec:
+    'Типичные задания: географические объекты и номенклатура, работа с картой и контурной картой, анализ статистических данных, диаграмм и климатограмм, причинно-следственные связи, расчёты (масштаб, широта и долгота, время, абсолютная и относительная высота).',
+    essential:'Существенные ошибки — свидетельствуют, что учащийся не усвоил основной материал, не умеет оперировать им (неверно определён/показан объект или процесс, неверно установлена причинно-следственная связь, неверный ход решения географической задачи).',
+    minor:'Несущественные ошибки — описки, неточности в написании названий, отдельные вычислительные ошибки, небрежность в оформлении. (В методичке по географии отдельных примечаний о снижении баллов нет — нормы применены по аналогии с химией и биологией.)', official:false}
+};
+const LEVELS = {
+  1:{r:'I',  name:'Узнавание',               marks:'1–2', d:'узнавание и различение элементов материала; выбор из предложенного'},
+  2:{r:'II', name:'Воспроизведение',         marks:'3–4', d:'воспроизведение по памяти: определения, факты, формулы, свойства; действия по образцу'},
+  3:{r:'III',name:'Понимание',               marks:'5–6', d:'объяснение, сравнение, причинно-следственные связи, решение типовых задач по известному алгоритму'},
+  4:{r:'IV', name:'Применение',              marks:'7–8', d:'применение знаний в знакомой ситуации, анализ, классификация, работа с информацией в разных формах'},
+  5:{r:'V',  name:'Нестандартная ситуация',  marks:'9–10',d:'нестандартные задачи, интеграция знаний, эксперимент и исследование, обоснование собственной позиции'}
+};
+const TYPES = {test:'Тест (выбор ответа)', short:'Краткий ответ', open:'Развёрнутый ответ', calc:'Расчётная задача', exp:null};
+const AUTO = t => t==='test'||t==='short';
+const typeLabel = t => t==='exp' ? SUBJ[S.subject].exp : TYPES[t];
+const FMT = {single:'один ответ', multi:'несколько вариантов', sequence:'последовательность', number:'число', text:'слово / формула'};
+
+const T30 = [1,2,3,6,9,12,15,19,24,29];
+const T55 = [1,2,5,8,13,19,26,34,43,53];
+const MARK5 = m => m<=3?2 : m<=5?3 : m<=7?4 : 5;
+const MARK_WORD = m => m<=3?'неудовлетворительно' : m<=5?'удовлетворительно' : m<=7?'хорошо' : 'отлично';
+
+function thresholds(max){
+  if(max===30) return {t:T30,src:'Таблица 3 (5 заданий, 30 баллов)',official:true};
+  if(max===55) return {t:T55,src:'Таблица 5 (10 заданий, 55 баллов)',official:true};
+  const t=[]; let prev=0;
+  T55.forEach((b,i)=>{ let v = i===0?1:Math.ceil(b/55*max-1e-9); v=Math.max(v,prev+1); v=Math.min(v,max); t.push(v); prev=v; });
+  return {t,src:'пропорционально шкале методички (нестандартная сумма баллов)',official:false};
+}
+function markFor(score,max){
+  const r=Math.round(score+1e-9); const {t}=thresholds(max); let m=0;
+  t.forEach((b,i)=>{ if(r>=b) m=i+1; });
+  return {rounded:r,mark:m};
+}
+
+/* ------------------------- Состояние ------------------------- */
+const S = { subject:'chem', files:{task:[],work:[]}, qs:[], title:'', graded:false, busy:false };
+let uid=0;
+const newQ = (o={})=>Object.assign({id:++uid,text:'',type:'open',fmt:'single',tol:0.5,level:3,max:1,key:'',keySource:'ai',ideal:'',
+  criteria:[],essential:[],minor:[],answer:'',auto:null,ai:null,manual:null},o);
+
+/* ------------------------- Подключение ИИ (как в gen_pres) ------------------------- */
+async function callModel(system, parts, maxTokens=8000){
+  const key = getApiKey();
+  if (!key) throw new Error('API-ключ отсутствует. Пожалуйста, авторизуйтесь на главной странице.');
+
+  // Преобразуем system + parts в один текстовый промпт, так как proxy.gen-api.ru принимает messages
+  let fullPrompt = system + '\n\n';
+  for (const p of parts) {
+    if (p.type === 'text') fullPrompt += p.text + '\n';
+    else if (p.type === 'image') {
+      // Примечание: если прокси не поддерживает изображения в базовом режиме, они могут игнорироваться
+      fullPrompt += `[Приложено изображение: ${p.mime}]\n`; 
+    }
+  }
+
+  const body = JSON.stringify({
+    model: 'gemini-2-5-flash-lite', // используем ту же модель, что и в gen_pres
+    max_tokens: maxTokens,
+    temperature: 0.2, // чуть ниже температура для более точного JSON
+    messages: [{ role: 'user', content: fullPrompt }]
+  });
+
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 180000);
+  let resp;
+  try {
+    resp = await fetch('https://proxy.gen-api.ru/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+      body, signal: ctrl.signal
+    });
+  } catch (e) {
+    clearTimeout(timer);
+    if (e.name === 'AbortError') throw new Error('API не ответил за 180 секунд');
+    throw new Error('Сетевая ошибка при запросе к API');
+  }
+  clearTimeout(timer);
+  
+  if (!resp.ok) {
+    const t = await resp.text();
+    throw new Error(`Ошибка API ${resp.status}: ${t.slice(0, 200)}`);
+  }
+  
+  const data = await resp.json();
+  const text = data?.choices?.[0]?.message?.content || data?.output || '';
+  if (!text) throw new Error('Пустой ответ API');
+  return text;
+}
+
+function parseJSON(txt){
+  let t=String(txt).replace(/```json|```/g,'').trim();
+  const a=t.indexOf('{'), b=t.lastIndexOf('}');
+  if(a<0||b<0) throw new Error('ИИ вернул ответ в неожиданном формате. Повторите попытку.');
+  try{ return JSON.parse(t.slice(a,b+1)); }catch(e){ throw new Error('Не удалось разобрать ответ ИИ (возможно, он оборвался). Повторите попытку или загрузите меньше страниц.'); }
+}
+async function askJSON(system, parts, maxTokens){
+  let lastErr;
+  for (let i = 0; i < 3; i++) {
+    try {
+      return parseJSON(await callModel(system, parts, maxTokens));
+    } catch (e) {
+      lastErr = e;
+      if (/Ошибка API 40[13]/.test(e.message) || /ключ/i.test(e.message)) throw e;
+      await new Promise(r => setTimeout(r, 1500 * (i + 1)));
+    }
+  }
+  throw lastErr;
+}
+
+/* ------------------------- Промпты ------------------------- */
+function baseSystem(){
+  const s=SUBJ[S.subject];
+  const lv=Object.entries(LEVELS).map(([k,v])=>`Уровень ${k} (${v.r}, отметки ${v.marks}) — ${v.name}: ${v.d}.`).join('\n');
+  return `Ты — методист и опытный учитель предмета «${s.name}» в школе Республики Беларусь. Ты работаешь по Методическим указаниям Министерства образования Республики Беларусь (2022) об оценке результатов учебной деятельности по десятибалльной шкале.
+${s.spec}
+
+Уровни учебной деятельности (из норм оценки):
+${lv}
+
+${s.essential}
+${s.minor}
+За задание, в котором допущена существенная ошибка, балл снижается не менее чем на 50%; за несущественную — не менее чем на 10%.
+
+Правила оформления: пиши по-русски, химические и математические формулы — в Юникоде (H₂SO₄, Ca²⁺, →, ↑, ↓, ≈, ×). Ничего не выдумывай: опирайся на текст, который дан. Отвечай СТРОГО одним JSON-объектом, без пояснений и без markdown.`;
+}
+function partsFrom(label, group, text){
+  const out=[];
+  group.filter(f=>f.status==='ok').forEach(f=>{
+    if(f.text) out.push({type:'text',text:`[${label}: файл «${f.name}»]\n${f.text}`});
+    (f.images||[]).forEach((im,i)=>{ out.push({type:'text',text:`[${label}: «${f.name}», изображение ${i+1}]`}); out.push({type:'image',mime:im.mime,b64:im.b64}); });
+  });
+  if(text.trim()) out.push({type:'text',text:`[${label}: текст]\n${text.trim()}`});
+  return out;
+}
+
+/* ------------------------- Файлы ------------------------- */
+const loaded={};
+function loadScript(src){ return loaded[src] || (loaded[src]=new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('Не удалось загрузить модуль чтения файлов (нужен интернет).'));document.head.appendChild(s);})); }
+function fileToDataURL(f){ return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f);}); }
+function imgFromURL(u){ return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error('Не удалось открыть изображение (поддерживаются JPG, PNG, WebP).'));i.src=u;}); }
+async function shrink(src, maxSide=1600){
+  const im = src instanceof HTMLCanvasElement ? src : await imgFromURL(src);
+  const w=im.width||im.naturalWidth, h=im.height||im.naturalHeight, k=Math.min(1,maxSide/Math.max(w,h));
+  const c=document.createElement('canvas'); c.width=Math.round(w*k); c.height=Math.round(h*k);
+  const x=c.getContext('2d'); x.fillStyle='#fff'; x.fillRect(0,0,c.width,c.height); x.drawImage(im,0,0,c.width,c.height);
+  return {mime:'image/jpeg', b64:c.toDataURL('image/jpeg',0.85).split(',')[1]};
+}
+async function extract(file){
+  const n=file.name.toLowerCase();
+  if(/\.(jpe?g|png|webp|gif|bmp)$/.test(n) || file.type.startsWith('image/')){
+    return {images:[await shrink(await fileToDataURL(file))]};
+  }
+  if(n.endsWith('.txt')||n.endsWith('.md')||n.endsWith('.csv')) return {text:await file.text()};
+  if(n.endsWith('.docx')){
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js');
+    const r=await window.mammoth.extractRawText({arrayBuffer:await file.arrayBuffer()});
+    return {text:r.value};
+  }
+  if(n.endsWith('.pdf')){
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+    const lib=window.pdfjsLib; lib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    const pdf=await lib.getDocument({data:await file.arrayBuffer()}).promise;
+    let text=''; const pages=Math.min(pdf.numPages,12);
+    for(let i=1;i<=pages;i++){ const p=await pdf.getPage(i); const c=await p.getTextContent(); text+=c.items.map(t=>t.str).join(' ')+'\n'; }
+    if(text.replace(/\s/g,'').length>60) return {text};
+    const images=[];
+    for(let i=1;i<=Math.min(pdf.numPages,6);i++){
+      const p=await pdf.getPage(i), vp=p.getViewport({scale:1.6}), cv=document.createElement('canvas');
+      cv.width=vp.width; cv.height=vp.height; await p.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;
+      images.push(await shrink(cv));
+    }
+    return {images};
+  }
+  if(n.endsWith('.doc')) throw new Error('Старый формат .doc не читается в браузере — сохраните как .docx или PDF.');
+  throw new Error('Неподдерживаемый формат файла.');
+}
+async function addFiles(zone, list){
+  for(const f of list){
+    const rec={name:f.name,status:'loading'}; S.files[zone].push(rec); renderFiles(zone);
+    try{ Object.assign(rec,await extract(f),{status:'ok'}); }catch(e){ rec.status='err'; rec.err=e.message; }
+    renderFiles(zone);
+  }
+}
+function renderFiles(zone){
+  $(zone==='task'?'#filesTask':'#filesWork').innerHTML = S.files[zone].map((f,i)=>
+    `<div class="file"><span class="nm" title="${esc(f.name)}">${esc(f.name)}</span>
+     <span class="st ${f.status==='err'?'err':''}">${f.status==='loading'?'читаю…':f.status==='err'?esc(f.err):(f.images?f.images.length+' стр. (фото)':'текст готов')}</span>
+     <button data-rm="${zone}:${i}" title="Убрать">×</button></div>`).join('');
+}
+
+/* ------------------------- Баллы и структура ------------------------- */
+function applyOfficialLevels(){
+  const n=S.qs.length;
+  if(n===5) S.qs.forEach((q,i)=>q.level=i+1);
+  else if(n===10) S.qs.forEach((q,i)=>q.level=Math.floor(i/2)+1);
+  else return false;
+  return true;
+}
+function suggestPoints(){
+  const n=S.qs.length, L=S.qs.map(q=>q.level).sort();
+  const isFive = n===5 && L.every((v,i)=>v===i+1);
+  const isTen = n===10 && L.every((v,i)=>v===Math.floor(i/2)+1);
+  if(isFive) S.qs.forEach(q=>q.max=2*q.level);
+  else if(isTen){ const seen={}; S.qs.slice().sort((a,b)=>a.level-b.level).forEach(q=>{ seen[q.level]=(seen[q.level]||0)+1; q.max=2*q.level-(seen[q.level]===1?1:0); }); }
+  else S.qs.forEach(q=>q.max=q.level);
+}
+const totalMax = () => S.qs.reduce((a,q)=>a+(+q.max||0),0);
+function qEarned(q){
+  if(q.manual!=null) return q.manual;
+  if(AUTO(q.type)){ return q.auto && q.auto.earned!=null ? q.auto.earned : 0; }
+  if(!q.ai) return 0;
+  const raw=q.criteria.reduce((a,c,i)=>a+Math.min(c.p,Math.max(0,+q.ai.earned[i]||0)),0);
+  if(!$('#chkPenalty').checked) return round1(Math.min(raw,q.max));
+  const ess=q.ai.errors.filter(e=>e.severity==='essential').length, min=q.ai.errors.filter(e=>e.severity!=='essential').length;
+  const pen = ess ? 0.5 : Math.min(0.5, 0.1*min);
+  return round1(Math.min(raw, q.max*(1-pen)));
+}
+const round1 = x => Math.round(x*10)/10;
+
+function autoCheck(q){
+  const key=(q.key||'').trim(), ans=(q.answer||'').trim();
+  if(!key) return {status:'nokey'};
+  if(!ans) return {status:'empty',earned:0};
+  const norm=s=>String(s).toLowerCase().replace(/ё/g,'е').replace(/[\s.,;:()\[\]{}"'«»\-–—]+/g,'');
+  const chars=s=>(String(s).toLowerCase().replace(/ё/g,'е').match(/[a-zа-я0-9]/g)||[]);
+  let ok=false;
+  for(const k of key.split('|').map(s=>s.trim()).filter(Boolean)){
+    if(q.fmt==='multi') ok = JSON.stringify(chars(ans).sort())===JSON.stringify(chars(k).sort());
+    else if(q.fmt==='sequence') ok = chars(ans).join('')===chars(k).join('');
+    else if(q.fmt==='number'){
+      const a=parseFloat(String(ans).replace(',','.').replace(/[^\d.\-eE]/g,'')), b=parseFloat(String(k).replace(',','.').replace(/[^\d.\-eE]/g,''));
+      ok = isFinite(a)&&isFinite(b)&&Math.abs(a-b)<=Math.max(1e-9,Math.abs(b)*(q.tol||0)/100);
+    } else ok = norm(ans)===norm(k);
+    if(ok) break;
+  }
+  return {status:ok?'ok':'wrong',earned:ok?q.max:0};
+}
+
+/* ------------------------- Рендер: шаг 2 ------------------------- */
+function typeOptions(sel){ return Object.keys(TYPES).map(t=>`<option value="${t}" ${t===sel?'selected':''}>${esc(typeLabel(t))}</option>`).join(''); }
+function levelOptions(sel){ return Object.entries(LEVELS).map(([k,v])=>`<option value="${k}" ${+k===+sel?'selected':''}>${v.r} · ${v.name}</option>`).join(''); }
+function renderStruct(){
+  const max=totalMax(), th=thresholds(max), n=S.qs.length;
+  const L=S.qs.map(q=>q.level).sort();
+  const std = (n===5 && L.every((v,i)=>v===i+1)) || (n===10 && L.every((v,i)=>v===Math.floor(i/2)+1));
+  let info = `<div class="msg info"><b>Всего: ${n} зад., ${max} баллов.</b> Шкала перевода: ${esc(th.src)}.`;
+  if(!std) info += ` Структура отличается от типовой (5 заданий = 30 баллов, 10 заданий = 55): отметки считаются пропорционально.`;
+  info += `</div>`;
+  if(max<10 && n) info += `<div class="msg warn">При сумме меньше 10 баллов десятибалльная шкала получается слишком «грубой» — добавьте баллов или заданий.</div>`;
+  $('#structInfo').innerHTML = info;
+  $('#qList').innerHTML = S.qs.map((q,i)=>`
+   <div class="q" data-id="${q.id}">
+    <div class="qh">
+      <div class="qn">${i+1}</div>
+      <div class="f"><select data-f="type">${typeOptions(q.type)}</select></div>
+      <div class="f"><select data-f="level">${levelOptions(q.level)}</select></div>
+      <div class="f pts">макс. <input type="number" min="0" step="0.5" data-f="max" value="${q.max}"> б.</div>
+      <div class="spacer"></div>
+      <button class="x" data-del="${q.id}" title="Удалить задание">×</button>
+    </div>
+    <label class="l">Текст задания</label>
+    <textarea data-f="text" rows="3">${esc(q.text)}</textarea>
+    <div class="g2" style="margin-top:10px">
+      <div>
+        <label class="l">${AUTO(q.type)?'Ключ (верный ответ; варианты через « | »)':'Итоговый ответ / ключ'} ${q.key&&q.keySource==='ai'?'<span class="badge warn">предложен ИИ — проверьте</span>':''}</label>
+        <textarea data-f="key" rows="2">${esc(q.key)}</textarea>
+        ${AUTO(q.type)?`<div class="row" style="margin-top:6px"><select data-f="fmt" style="width:auto;font-size:13px">${Object.entries(FMT).map(([k,v])=>`<option value="${k}" ${k===q.fmt?'selected':''}>${v}</option>`).join('')}</select>
+          ${q.fmt==='number'?`<span class="pts">допуск <input type="number" min="0" step="0.1" data-f="tol" value="${q.tol}" style="width:70px;padding:5px 8px"> %</span>`:''}</div>`:''}
+      </div>
+      <div>
+        ${AUTO(q.type)?'':`<label class="l">Эталонный ответ / решение</label><textarea data-f="ideal" rows="4">${esc(q.ideal)}</textarea>`}
+      </div>
+    </div>
+   </div>`).join('') || '<div class="msg info">Заданий пока нет — добавьте вручную.</div>';
+}
+
+/* ------------------------- Рендер: шаг 3 ------------------------- */
+function critSum(q){ return round1(q.criteria.reduce((a,c)=>a+(+c.p||0),0)); }
+function renderCrit(){
+  $('#critList').innerHTML = S.qs.map((q,i)=>{
+    const sum=critSum(q), ok=Math.abs(sum-q.max)<0.001;
+    return `<div class="q" data-id="${q.id}">
+     <div class="qh"><div class="qn">${i+1}</div><span class="badge">${esc(typeLabel(q.type))}</span><span class="badge">${LEVELS[q.level].r} · ${LEVELS[q.level].name}</span>
+       <span class="badge ok">макс. ${q.max} б.</span></div>
+     <div class="small qtext" style="margin-bottom:8px">${esc(q.text.length>220?q.text.slice(0,220)+'…':q.text)}</div>
+     ${q.criteria.map((c,j)=>`<div class="crit"><input type="text" data-c="t" data-j="${j}" value="${esc(c.t)}"><input type="number" min="0" step="0.5" data-c="p" data-j="${j}" value="${c.p}"><button class="x" data-cdel="${q.id}:${j}">×</button></div>`).join('')}
+     <div class="row"><button class="btn link" data-cadd="${q.id}">+ элемент</button><span class="sum ${ok?'ok':'bad'}" data-sum="${q.id}">Сумма: ${sum} из ${q.max}${ok?' ✓':''}</span>
+       ${ok?'':`<button class="btn link" data-cfix="${q.id}">выровнять</button>`}</div>
+     ${(q.essential.length||q.minor.length)?`<div class="g2" style="margin-top:8px">
+       <div><div class="small"><b>Существенные ошибки</b> (−50% и более)</div><div class="small">${q.essential.map(e=>'• '+esc(e)).join('<br>')||'—'}</div></div>
+       <div><div class="small"><b>Несущественные</b> (−10% и более)</div><div class="small">${q.minor.map(e=>'• '+esc(e)).join('<br>')||'—'}</div></div></div>`:''}
+    </div>`; }).join('');
+}
+
+/* ------------------------- Рендер: шаг 4 ------------------------- */
+function highlight(text, errs){
+  const low=text.toLowerCase(), ranges=[];
+  errs.filter(e=>e.fragment&&e.fragment.trim().length>1).sort((a,b)=>b.fragment.length-a.fragment.length).forEach(e=>{
+    const i=low.indexOf(e.fragment.trim().toLowerCase()); if(i<0) return;
+    const j=i+e.fragment.trim().length; if(ranges.some(r=>i<r[1]&&j>r[0])) return;
+    ranges.push([i,j,e.severity==='essential'?'essential':'minor']);
+  });
+  ranges.sort((a,b)=>a[0]-b[0]);
+  let out='',p=0; ranges.forEach(([i,j,c])=>{ out+=esc(text.slice(p,i))+`<mark class="${c}">${esc(text.slice(i,j))}</mark>`; p=j; });
+  return out+esc(text.slice(p));
+}
+function renderCheck(){
+  $('#checkList').innerHTML = S.qs.map((q,i)=>{
+    const e=qEarned(q);
+    let res='';
+    if(AUTO(q.type)){
+      const a=q.auto; if(a){
+        res = a.status==='ok'?`<span class="badge ok">верно по ключу</span>`: a.status==='wrong'?`<span class="badge bad">неверно</span>`: a.status==='empty'?`<span class="badge warn">нет ответа</span>`:`<span class="badge warn">нет ключа</span>`;
+      }
+    } else if(q.ai){
+      res = `<div class="small" style="margin-top:8px"><b>Критерии</b></div>`+q.criteria.map((c,j)=>`<div class="crit chk"><div class="t">${esc(c.t)}</div><div class="small" style="padding-top:6px">макс. ${c.p}</div>
+        <input type="number" min="0" max="${c.p}" step="0.5" data-ce="${q.id}:${j}" value="${Math.min(c.p,Math.max(0,+q.ai.earned[j]||0))}"></div>`).join('')
+        + (q.ai.errors.length?`<ul class="errs">${q.ai.errors.map(er=>`<li class="${er.severity==='essential'?'essential':'minor'}"><b>${er.severity==='essential'?'Существенная ошибка':'Несущественная ошибка'}.</b> ${er.fragment?`«${esc(er.fragment)}» — `:''}${esc(er.explain)}</li>`).join('')}</ul>`:'<div class="small" style="margin-top:6px">Ошибок не найдено.</div>')
+        + (q.ai.comment?`<div class="small" style="margin-top:6px">${esc(q.ai.comment)}</div>`:'');
+    }
+    const showAns = AUTO(q.type)||!q.ai;
+    return `<div class="q ${AUTO(q.type)&&q.auto&&q.auto.status==='wrong'?'autoerr':''}" data-id="${q.id}">
+      <div class="qh"><div class="qn">${i+1}</div><span class="badge">${esc(typeLabel(q.type))}</span><div class="spacer"></div>
+        ${res&&AUTO(q.type)?res:''}
+        <span class="pts">балл <input type="number" min="0" max="${q.max}" step="0.5" data-man="${q.id}" value="${e}"> из ${q.max}</span></div>
+      <div class="small qtext" style="margin-bottom:8px">${esc(q.text.length>200?q.text.slice(0,200)+'…':q.text)}</div>
+      ${AUTO(q.type)?`<div class="small" style="margin-bottom:4px">Ключ: <b>${esc(q.key)||'—'}</b></div>`:''}
+      <label class="l">Ответ ученика ${q.type!=='test'&&q.type!=='short'&&q.ai?'(ошибки подсвечены)':''}</label>
+      ${showAns?`<textarea data-ans="${q.id}" rows="${AUTO(q.type)?1:4}">${esc(q.answer)}</textarea>`:`<div class="ans">${highlight(q.answer,q.ai.errors)||'<span class="small">ответ не найден</span>'}</div>
+        <details style="margin-top:6px"><summary class="small">Исправить распознанный ответ</summary><textarea data-ans="${q.id}" rows="4" style="margin-top:6px">${esc(q.answer)}</textarea></details>`}
+      ${!AUTO(q.type)?res:''}
+    </div>`; }).join('');
+}
+
+/* ------------------------- Рендер: шаг 5 ------------------------- */
+function renderResult(){
+  const max=totalMax(), th=thresholds(max);
+  const scale = th.t.map((b,i)=>({m:i+1,from:b,to:(th.t[i+1]?th.t[i+1]-1:max)}));
+  const hasWork = S.graded;
+  let cur=null, sc=0;
+  if(hasWork){ sc=S.qs.reduce((a,q)=>a+qEarned(q),0); cur=markFor(sc,max); }
+  let h='';
+  if(hasWork){
+    const m=cur.mark;
+    h+=`<div class="total">
+      <div class="stat big"><div class="v">${m||'—'}</div><div class="k">${m?`отметка (10-балльная) · ${MARK_WORD(m)}`:'0 баллов — отметка не выставляется'}</div></div>
+      <div class="stat"><div class="v">${round1(sc)} / ${max}</div><div class="k">первичный балл${sc!==cur.rounded?` → округлён до ${cur.rounded}`:''}</div></div>
+      <div class="stat"><div class="v">${m?MARK5(m):'—'}</div><div class="k">справочно по 5-балльной шкале</div></div>
+      <div class="stat"><div class="v">${max?Math.round(sc/max*100):0}%</div><div class="k">выполнено</div></div></div>
+      <div class="small">Сумма баллов с учётом ошибок округляется по правилам математического округления, затем переводится в отметку.</div>
+      <table class="t"><tr><th>№</th><th>Задание</th><th>Балл</th></tr>${S.qs.map((q,i)=>`<tr><td>${i+1}</td><td>${esc(typeLabel(q.type))}, ${LEVELS[q.level].r} ур.</td><td>${qEarned(q)} / ${q.max}</td></tr>`).join('')}</table>`;
+  } else {
+    h+=`<div class="total">
+      <div class="stat big"><div class="v">${max}</div><div class="k">максимальный первичный балл</div></div>
+      <div class="stat"><div class="v">${S.qs.length}</div><div class="k">заданий</div></div>
+      <div class="stat"><div class="v">${th.t[3]}</div><div class="k">минимум для отметки 4 (зачёт)</div></div></div>`;
+  }
+  h+=`<h3 style="font-size:15px;margin:18px 0 0">Шкала перевода баллов в отметку</h3><div class="small">${esc(th.src)}${th.official?'':'. Рекомендация: уточните границы с учётом локальных актов учреждения.'}</div>
+   <table class="t"><tr><th>Баллы</th><th>Отметка (10 б.)</th><th>Словесно</th><th>5-балльный эквивалент*</th></tr>
+   ${scale.map(r=>`<tr class="${cur&&cur.mark===r.m?'cur':''}"><td>${r.from===r.to?r.from:r.from+'–'+r.to}</td><td>${r.m}</td><td>${MARK_WORD(r.m)}</td><td>${MARK5(r.m)}</td></tr>`).join('')}</table>
+   <div class="small" style="margin-top:6px">*Справочный перевод для удобства: 1–3 → «2», 4–5 → «3», 6–7 → «4», 8–10 → «5». В нормах РБ официальная шкала — десятибалльная.</div>
+   ${S.graded?`<div class="toolbar"><button class="btn" id="btnResCopy">Копировать итог</button><button class="btn ghost" id="btnResDoc">Скачать для Word</button><button class="btn ghost" id="btnResPrint">Печать / PDF</button></div>`:''}`;
+  $('#resultBox').innerHTML=h;
+  $('#refInner').innerHTML = `<p><b>Уровни и отметки.</b> ${Object.values(LEVELS).map(v=>`${v.r} — ${v.name.toLowerCase()} (отметки ${v.marks})`).join('; ')}.</p>
+   <p><b>Типовые структуры:</b> 5 заданий по уровням I–V — 2, 4, 6, 8, 10 баллов (всего 30); 10 заданий, по два на уровень, — 1…10 баллов (всего 55).</p>
+   <p><b>Ошибки.</b> ${esc(SUBJ[S.subject].essential)} ${esc(SUBJ[S.subject].minor)}</p>
+   <p>За существенную ошибку балл за задание снижается не менее чем на 50%, за несущественную — не менее чем на 10%.</p>`;
+  $('#btnResCopy')&&($('#btnResCopy').onclick=()=>copyText(buildText(true)));
+  $('#btnResDoc')&&($('#btnResDoc').onclick=()=>downloadDoc(true));
+  $('#btnResPrint')&&($('#btnResPrint').onclick=()=>printDoc(true));
+}
+
+/* ------------------------- Навигация / показ секций ------------------------- */
+function show(n){
+  for(let i=2;i<=5;i++){ const on=i<=n; $('#s'+i).hidden=!on; $(`.nav a[data-s="${i}"]`).classList.toggle('off',!on); }
+  $$('.nav a').forEach(a=>a.classList.remove('on'));
+  const a=$(`.nav a[data-s="${n}"]`); a&&a.classList.add('on');
+}
+function hasWork(){ return S.files.work.some(f=>f.status==='ok') || $('#txtWork').value.trim().length>0 || S.qs.some(q=>q.answer.trim()); }
+function refreshAll(){
+  renderStruct(); renderCrit(); renderCheck(); renderResult();
+  const hasCrit=S.qs.some(q=>q.criteria.length);
+  const w=hasWork();
+  $('#s3').hidden=!hasCrit; $('#s4').hidden=!(w&&S.qs.length);
+  $(`.nav a[data-s="3"]`).classList.toggle('off',!hasCrit); $(`.nav a[data-s="4"]`).classList.toggle('off',!(w&&S.qs.length));
+  $('#s2').hidden=!S.qs.length; $(`.nav a[data-s="2"]`).classList.toggle('off',!S.qs.length);
+  $('#s5').hidden=!S.qs.length; $(`.nav a[data-s="5"]`).classList.toggle('off',!S.qs.length);
+}
+function scrollTo(id){ const el=$(id); el&&el.scrollIntoView({behavior:'smooth',block:'start'}); }
+function setMsg(id,text,kind='err'){ $(id).innerHTML = text?`<div class="msg ${kind}">${esc(text)}</div>`:''; }
+async function busy(btn, msgId, fn){
+  if(S.busy) return; S.busy=true; const old=btn.innerHTML; btn.disabled=true; btn.innerHTML=`<span class="spin"></span>Работаю…`; setMsg(msgId,'');
+  try{ await fn(); }catch(e){ setMsg(msgId,e.message||String(e)); console.error(e); }
+  finally{ S.busy=false; btn.disabled=false; btn.innerHTML=old; }
+}
+
+/* ------------------------- Действия с ИИ ------------------------- */
+async function analyze(){
+  const task=partsFrom('ЗАДАНИЕ',S.files.task,$('#txtTask').value);
+  if(!task.length) throw new Error('Загрузите задание или вставьте его текст.');
+  const work=partsFrom('РАБОТА УЧЕНИКА',S.files.work,$('#txtWork').value);
+  const key=$('#txtKey').value.trim();
+  const sys=baseSystem();
+  const instr=`Предмет: ${SUBJ[S.subject].name}. ${work.length?'Даны задание И работа ученика.':'Дано только задание (без работы ученика).'}
+Что сделать:
+1. Распознай текст и раздели его на отдельные задания (сохрани исходную нумерацию и формулировки; варианты ответов теста оставь внутри текста задания).
+2. Для каждого задания определи тип: "test" (выбор ответа из вариантов), "short" (краткий ответ: слово, число, формула, соответствие), "open" (развёрнутый ответ), "calc" (расчётная задача), "exp" (описание опыта, практической/лабораторной работы${S.subject==='geo'?', работа с картой или данными':''}).
+3. Для test/short укажи формат ответа fmt: "single" | "multi" | "sequence" | "number" | "text".
+4. Определи уровень 1–5 по нормам оценки (см. выше).
+5. Ключ: если в материалах есть ключ/ответы — возьми его (key_source:"document"). Если нет — реши задание сам и дай ключ (key_source:"ai"). Для test/short "key" — только сам ответ (например "135" или "Fe"). Для open/calc/exp в "key" дай итоговый ответ (если он есть), а в "ideal" — эталонное решение/ответ по шагам, кратко.
+6. ${work.length?'Для каждого задания выпиши ответ ученика дословно в student_answer (для теста — только выбранные ответы). Если ответа нет — пустая строка. Не исправляй ошибки ученика.':'student_answer оставь пустой строкой.'}
+${key?'Отдельный ключ от учителя:\n'+key+'\n':''}
+Формат ответа — один JSON:
+{"title":"тема/название работы или ''","questions":[{"num":1,"text":"…","type":"test","fmt":"single","level":1,"key":"…","key_source":"document","ideal":"","student_answer":""}],"warnings":["что осталось неразборчивым"]}`;
+  const parts=[{type:'text',text:instr},...task,...work];
+  const j=await askJSON(sys,parts,12000);
+  if(!Array.isArray(j.questions)||!j.questions.length) throw new Error('Не удалось найти задания. Проверьте качество фото или вставьте текст.');
+  S.title=j.title||''; S.graded=false;
+  const T=['test','short','open','calc','exp'];
+  S.qs=j.questions.map(x=>newQ({text:String(x.text||''),type:T.includes(x.type)?x.type:'open',fmt:FMT[x.fmt]?x.fmt:'single',
+    level:Math.min(5,Math.max(1,parseInt(x.level)||3)),key:String(x.key??''),keySource:x.key_source==='document'?'document':'ai',ideal:String(x.ideal||''),answer:String(x.student_answer||'')}));
+  suggestPoints();
+  S.qs.forEach(q=>{ if(AUTO(q.type)&&q.answer.trim()) q.auto=autoCheck(q); });
+  refreshAll();
+  if(j.warnings&&j.warnings.length) setMsg('#msg2','Обратите внимание: '+j.warnings.join('; '),'warn');
+  scrollTo('#s2');
+}
+async function makeCriteria(){
+  if(!S.qs.length) throw new Error('Нет заданий.');
+  const list=S.qs.map((q,i)=>({num:i+1,type:q.type,level:q.level,max_points:q.max,text:q.text,key:q.key,ideal:q.ideal}));
+  const prompt=`Составь сетку оценивания для каждого задания. Правила:
+— Сумма баллов элементов ровно равна max_points задания; баллы кратны 0.5.
+— test/short: обычно один элемент «Верный ответ» на все баллы (если несколько частей/соответствий — раздели баллы по частям).
+— calc: раздели по этапам решения (например: уравнение реакции/формула — …; ход расчёта — …; ответ с единицами измерения — …). Пример: верный ответ — 2 балла, ход решения без ответа — 1 балл.
+— open/exp: раздели по элементам эталонного ответа (ключевые факты, объяснение, вывод и т. д.).
+— Формулировки элементов — наблюдаемые, понятные учителю.
+— Для каждого задания перечисли 1–3 типичные существенные ошибки и 1–3 несущественные (по определениям из норм).
+Задания:
+${JSON.stringify(list)}
+Ответ — один JSON: {"items":[{"num":1,"criteria":[{"t":"…","p":1}],"essential":["…"],"minor":["…"]}]}`;
+  const j=await askJSON(baseSystem(),[{type:'text',text:prompt}],10000);
+  (j.items||[]).forEach(it=>{
+    const q=S.qs[(it.num|0)-1]; if(!q) return;
+    q.criteria=(it.criteria||[]).map(c=>({t:String(c.t||''),p:Math.max(0,Math.round((+c.p||0)*2)/2)})).filter(c=>c.t);
+    const d=round1(q.max-critSum(q)); if(q.criteria.length&&Math.abs(d)>0.001) q.criteria[q.criteria.length-1].p=Math.max(0,round1(q.criteria[q.criteria.length-1].p+d));
+    q.essential=(it.essential||[]).map(String); q.minor=(it.minor||[]).map(String);
+  });
+  S.qs.forEach(q=>{ if(!q.criteria.length) q.criteria=[{t:AUTO(q.type)?'Верный ответ':'Выполнено полностью и верно',p:q.max}]; });
+  refreshAll(); scrollTo('#s3');
+  if(hasWork()){ S.qs.forEach(q=>{ if(AUTO(q.type)) q.auto=autoCheck(q); }); renderCheck(); renderResult(); }
+}
+async function checkWork(){
+  S.qs.forEach(q=>{ q.manual=null; if(AUTO(q.type)) q.auto=autoCheck(q); });
+  const open=S.qs.map((q,i)=>({q,i})).filter(({q})=>!AUTO(q.type));
+  if(open.some(({q})=>!q.criteria.length)){
+    await makeCriteria();
+  }
+  const todo=open.filter(({q})=>q.answer.trim());
+  open.filter(({q})=>!q.answer.trim()).forEach(({q})=>{ q.ai={earned:q.criteria.map(()=>0),errors:[],comment:'Ответ отсутствует.'}; });
+  if(todo.length){
+    const payload=todo.map(({q,i})=>({num:i+1,type:q.type,level:q.level,max_points:q.max,task:q.text,reference_answer:q.ideal||q.key,criteria:q.criteria.map(c=>({t:c.t,max:c.p})),student_answer:q.answer}));
+    const prompt=`Проверь развёрнутые ответы ученика. Для КАЖДОГО задания:
+— "earned": сколько баллов (кратно 0.5, не больше max элемента) заслужил ответ по каждому элементу критериев, в том же порядке;
+— "errors": найденные ошибки (${S.subject==='chem'?'химические':S.subject==='bio'?'биологические':'географические'} и логические), каждая с severity "essential" (существенная) или "minor" (несущественная) строго по определениям из норм; "fragment" — ДОСЛОВНАЯ копия неверного фрагмента из ответа ученика (если ошибка — пропуск, fragment ""); "explain" — одно предложение: что неверно и как правильно;
+— "comment": одна короткая итоговая фраза.
+Будь объективен: не засчитывай элемент, если он выполнен неверно; не придирайся к несущественному. Снижение баллов за ошибки применит программа — НЕ снижай "earned" дополнительно за тип ошибки.
+Задания:
+${JSON.stringify(payload)}
+Ответ — один JSON: {"items":[{"num":3,"earned":[1,0.5],"errors":[{"fragment":"…","explain":"…","severity":"essential"}],"comment":"…"}]}`;
+    const j=await askJSON(baseSystem(),[{type:'text',text:prompt}],10000);
+    (j.items||[]).forEach(it=>{
+      const q=S.qs[(it.num|0)-1]; if(!q||AUTO(q.type)) return;
+      q.ai={earned:(it.earned||[]).map(x=>+x||0),errors:(it.errors||[]).map(e=>({fragment:String(e.fragment||''),explain:String(e.explain||''),severity:e.severity==='essential'?'essential':'minor'})),comment:String(it.comment||'')};
+      while(q.ai.earned.length<q.criteria.length) q.ai.earned.push(0);
+    });
+    todo.forEach(({q})=>{ if(!q.ai) q.ai={earned:q.criteria.map(()=>0),errors:[],comment:'ИИ не вернул оценку — выставьте баллы вручную.'}; });
+  }
+  S.graded=true; renderCheck(); renderResult(); scrollTo('#s5');
+}
+
+/* ------------------------- Экспорт ------------------------- */
+function buildDocHTML(withRes){
+  const s=SUBJ[S.subject], max=totalMax(), th=thresholds(max);
+  const rows=S.qs.map((q,i)=>`<tr><td>${i+1}</td><td>${esc(typeLabel(q.type))}<br>${LEVELS[q.level].r} уровень</td><td>${esc(q.text.length>160?q.text.slice(0,160)+'…':q.text)}</td><td>${q.max}</td><td>${esc(q.key||'')}</td>
+    <td>${q.criteria.map(c=>`${esc(c.t)} — <b>${c.p}</b>`).join('<br>')}${q.essential.length?`<br><i>Существенные ошибки:</i> ${q.essential.map(esc).join('; ')}`:''}${q.minor.length?`<br><i>Несущественные:</i> ${q.minor.map(esc).join('; ')}`:''}</td></tr>`).join('');
+  const scale=th.t.map((b,i)=>`<tr><td>${b===(th.t[i+1]-1||max)?b:b+'–'+(th.t[i+1]?th.t[i+1]-1:max)}</td><td>${i+1}</td><td>${MARK_WORD(i+1)}</td></tr>`).join('');
+  let h=`<h1>Критерии и оценка${S.title?': '+esc(S.title):''}</h1><p>Предмет: ${s.name}. Максимальный первичный балл: <b>${max}</b>.</p>
+   <h2>Сетка оценивания</h2><table><tr><th>№</th><th>Тип</th><th>Задание</th><th>Макс.</th><th>Ключ</th><th>Критерии</th></tr>${rows}</table>
+   <p>При существенной ошибке балл за задание снижается не менее чем на 50%, при несущественной — не менее чем на 10%. Итоговая сумма округляется по правилам математического округления.</p>
+   <h2>Шкала перевода в отметку (${esc(th.src)})</h2><table><tr><th>Баллы</th><th>Отметка</th><th>Оценка словами</th></tr>${scale}</table>`;
+  if(withRes&&S.graded){
+    const sc=S.qs.reduce((a,q)=>a+qEarned(q),0), m=markFor(sc,max);
+    h+=`<h2>Результат${$('#pupil').value?': '+esc($('#pupil').value):''}</h2><table><tr><th>№</th><th>Балл</th><th>Комментарий</th></tr>${S.qs.map((q,i)=>`<tr><td>${i+1}</td><td>${qEarned(q)} / ${q.max}</td><td>${AUTO(q.type)?(q.auto?({ok:'верно по ключу',wrong:'неверно',empty:'нет ответа',nokey:'нет ключа'}[q.auto.status]):''):(q.ai?q.ai.errors.map(e=>(e.severity==='essential'?'[существенная] ':'[несущественная] ')+(e.fragment?'«'+esc(e.fragment)+'» — ':'')+esc(e.explain)).join('<br>'):'')}</td></tr>`).join('')}</table>
+    <p><b>Итого: ${round1(sc)} из ${max}; отметка: ${m.mark||'—'}</b> (${m.mark?MARK_WORD(m.mark)+'; справочно по 5-балльной шкале — '+MARK5(m.mark):''}).</p>`;
+  }
+  return h;
+}
+function buildText(withRes){
+  const div=document.createElement('div'); div.innerHTML=buildDocHTML(withRes).replace(/<\/(tr|p|h1|h2)>/g,'\n').replace(/<\/(td|th)>/g,' | ').replace(/<br>/g,'\n');
+  return div.textContent.replace(/\n{3,}/g,'\n\n');
+}
+async function copyText(t){ try{ await navigator.clipboard.writeText(t); toast('Скопировано'); }catch(e){ const a=document.createElement('textarea'); a.value=t; document.body.appendChild(a); a.select(); document.execCommand('copy'); a.remove(); toast('Скопировано'); } }
+function downloadDoc(withRes){
+  const html=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><style>body{font-family:Calibri,Arial;font-size:11pt}table{border-collapse:collapse;width:100%}td,th{border:1px solid #777;padding:4pt 6pt;vertical-align:top}</style></head><body>${buildDocHTML(withRes)}</body></html>`;
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['﻿',html],{type:'application/msword'})); a.download=`kriterii-${SUBJ[S.subject].name.toLowerCase()}.doc`; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+function printDoc(withRes){ $('#printArea').innerHTML=buildDocHTML(withRes); window.print(); }
+function toast(t){ const m=$('#msg3'); setMsg('#msg3',t,'info'); setTimeout(()=>{ if(m.textContent===t) setMsg('#msg3',''); },2000); }
+function attach(){
+  const detail={subject:S.subject,title:S.title,maxScore:totalMax(),questions:S.qs.map((q,i)=>({num:i+1,type:q.type,level:q.level,max:q.max,text:q.text,key:q.key,criteria:q.criteria})),html:buildDocHTML(false),text:buildText(false)};
+  try{ localStorage.setItem('cg_last_result',JSON.stringify(detail)); }catch(e){}
+  window.dispatchEvent(new CustomEvent('criteria:ready',{detail}));
+  try{ window.parent!==window && window.parent.postMessage({type:'criteria:ready',detail},'*'); }catch(e){}
+  try{ if(window.GeneratorAPI && typeof window.GeneratorAPI.emit==='function') window.GeneratorAPI.emit('criteria:ready',detail); }catch(e){}
+  toast('Сетка передана приложению (и сохранена для вставки в тест)');
+}
+
+/* ------------------------- События ------------------------- */
+$('#subjChips').addEventListener('click',e=>{ const b=e.target.closest('.chip'); if(!b) return; S.subject=b.dataset.v; $$('#subjChips .chip').forEach(c=>c.classList.toggle('on',c===b)); if(S.qs.length) refreshAll(); });
+$$('[data-pick]').forEach(b=>b.onclick=()=>$(b.dataset.pick==='task'?'#fileTask':'#fileWork').click());
+$('#fileTask').onchange=e=>{ addFiles('task',[...e.target.files]); e.target.value=''; };
+$('#fileWork').onchange=e=>{ addFiles('work',[...e.target.files]); e.target.value=''; };
+['zoneTask','zoneWork'].forEach(id=>{
+  const z=$('#'+id), k=z.dataset.zone;
+  z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('drag');});
+  z.addEventListener('dragleave',()=>z.classList.remove('drag'));
+  z.addEventListener('drop',e=>{e.preventDefault();z.classList.remove('drag');addFiles(k,[...e.dataTransfer.files]);});
+});
+document.addEventListener('paste',e=>{ const f=[...(e.clipboardData?.files||[])].filter(x=>x.type.startsWith('image/')); if(f.length&&!/TEXTAREA|INPUT/.test(document.activeElement.tagName)) addFiles('task',f); });
+document.addEventListener('click',e=>{
+  const r=e.target.closest('[data-rm]'); if(r){ const [z,i]=r.dataset.rm.split(':'); S.files[z].splice(+i,1); renderFiles(z); }
+});
+$('#txtWork').addEventListener('input',()=>{ if(S.qs.length) refreshAll(); });
+$('#btnAnalyze').onclick=function(){ busy(this,'#msg1',analyze); };
+$('#btnCriteria').onclick=function(){ busy(this,'#msg2',makeCriteria); };
+$('#btnCheck').onclick=function(){ busy(this,'#msg4',checkWork); };
+$('#btnOfficial').onclick=()=>{ if(!applyOfficialLevels()){ setMsg('#msg2','Типовая структура — ровно 5 или 10 заданий. Сейчас заданий: '+S.qs.length,'warn'); return; } suggestPoints(); S.qs.forEach(q=>q.criteria=[]); refreshAll(); setMsg('#msg2','Уровни назначены по порядку, баллы — по таблицам 2 и 4. Составьте сетку заново.','info'); };
+$('#btnAddQ').onclick=()=>{ S.qs.push(newQ({level:3,max:3,type:'open'})); refreshAll(); };
+$('#btnCopy').onclick=()=>copyText(buildText(false));
+$('#btnDoc').onclick=()=>downloadDoc(false);
+$('#btnPrint').onclick=()=>printDoc(false);
+$('#btnAttach').onclick=attach;
+$('#chkPenalty').onchange=()=>{ renderCheck(); renderResult(); };
+
+const qOf=el=>S.qs.find(q=>q.id===+el.closest('.q').dataset.id);
+$('#qList').addEventListener('input',e=>{
+  const f=e.target.dataset.f; if(!f) return; const q=qOf(e.target); let v=e.target.value;
+  if(f==='max'||f==='tol') v=Math.max(0,parseFloat(v)||0);
+  if(f==='level') v=+v;
+  q[f]=v;
+  if(f==='key') q.keySource='teacher';
+  if(f==='max'){ const el=$('#structInfo b'); if(el) el.textContent=`Всего: ${S.qs.length} зад., ${totalMax()} баллов.`; renderResult(); }
+});
+$('#qList').addEventListener('change',e=>{
+  const f=e.target.dataset.f; if(['type','level','fmt','max','tol','key'].includes(f)){ const q=qOf(e.target); if(AUTO(q.type)&&q.answer.trim()) q.auto=autoCheck(q); refreshAll(); }
+});
+$('#qList').addEventListener('click',e=>{ const d=e.target.closest('[data-del]'); if(d){ S.qs=S.qs.filter(q=>q.id!==+d.dataset.del); refreshAll(); } });
+
+$('#critList').addEventListener('input',e=>{
+  const c=e.target.dataset.c; if(!c) return; const q=qOf(e.target), j=+e.target.dataset.j;
+  q.criteria[j][c]= c==='p'?Math.max(0,parseFloat(e.target.value)||0):e.target.value;
+  const sum=critSum(q), ok=Math.abs(sum-q.max)<0.001, el=$(`[data-sum="${q.id}"]`);
+  el.className='sum '+(ok?'ok':'bad'); el.textContent=`Сумма: ${sum} из ${q.max}${ok?' ✓':''}`;
+});
+$('#critList').addEventListener('change',e=>{ if(e.target.dataset.c==='p') renderCrit(); });
+$('#critList').addEventListener('click',e=>{
+  const a=e.target.closest('[data-cadd]'),d=e.target.closest('[data-cdel]'),f=e.target.closest('[data-cfix]');
+  if(a){ const q=S.qs.find(q=>q.id===+a.dataset.cadd); q.criteria.push({t:'',p:0}); renderCrit(); }
+  if(d){ const [id,j]=d.dataset.cdel.split(':'); S.qs.find(q=>q.id===+id).criteria.splice(+j,1); renderCrit(); }
+  if(f){ const q=S.qs.find(q=>q.id===+f.dataset.cfix); if(q.criteria.length){ const last=q.criteria[q.criteria.length-1]; last.p=Math.max(0,round1(last.p+q.max-critSum(q))); } renderCrit(); }
+});
+
+$('#checkList').addEventListener('input',e=>{
+  const t=e.target;
+  if(t.dataset.ans){ const q=S.qs.find(q=>q.id===+t.dataset.ans); q.answer=t.value; q.auto=AUTO(q.type)?autoCheck(q):null; }
+});
+$('#checkList').addEventListener('change',e=>{
+  const t=e.target;
+  if(t.dataset.ans){ const q=S.qs.find(q=>q.id===+t.dataset.ans); if(AUTO(q.type)){ q.manual=null; q.auto=autoCheck(q); } S.graded=S.graded||S.qs.some(x=>x.auto); renderCheck(); renderResult(); }
+  if(t.dataset.man){ const q=S.qs.find(q=>q.id===+t.dataset.man); q.manual=Math.min(q.max,Math.max(0,parseFloat(t.value)||0)); S.graded=true; renderResult(); }
+  if(t.dataset.ce){ const [id,j]=t.dataset.ce.split(':'); const q=S.qs.find(q=>q.id===+id); q.ai.earned[+j]=parseFloat(t.value)||0; q.manual=null; renderCheck(); renderResult(); }
+});
+
+$$('.nav a').forEach(a=>a.addEventListener('click',e=>{ if(a.classList.contains('off')) e.preventDefault(); }));
+
+/* ------------------------- Интеграция с приложением -------------------------
+   Каналы входящих данных (любой из них):
+     • CriteriaGenerator.load({subject:'chem'|'bio'|'geo', title, text, answerKey, studentWork, autoRun:true})
+     • postMessage({type:'criteria:load', ...тот же объект}) из родительского окна
+     • localStorage 'cg_incoming' (JSON того же вида)
+     • URL-параметры: criteria-generator.html?subject=chem&text=...&autoRun=1
+   Исходящие: событие 'criteria:ready', postMessage + GeneratorAPI.emit
+   Регистрация в мосте: GeneratorAPI.register({criteria:{href:'criteria-generator.html',endpoint:'/api/gen/criteria',method:'POST'}}) */
+async function loadExternal(o){
+  if(!o) return;
+  if(o.subject&&SUBJ[o.subject]){ S.subject=o.subject; $$('#subjChips .chip').forEach(c=>c.classList.toggle('on',c.dataset.v===o.subject)); }
+  if(o.text) $('#txtTask').value=o.text;
+  if(o.studentWork) $('#txtWork').value=o.studentWork;
+  if(o.answerKey){ $('#txtKey').value=o.answerKey; const d=$('details'); d&&(d.open=true); }
+  if(o.autoRun!==false && o.text){
+    const b=$('#btnAnalyze'); await busy(b,'#msg1',async()=>{ await analyze(); await makeCriteria(); });
+  }
+}
+window.CriteriaGenerator={ load:loadExternal, getResult:()=>{ try{return JSON.parse(localStorage.getItem('cg_last_result')||'null');}catch(e){return null;} }, _state:S };
+window.addEventListener('message',e=>{ if(e.data&&e.data.type==='criteria:load') loadExternal(e.data); });
+try{ const inc=localStorage.getItem('cg_incoming'); if(inc){ localStorage.removeItem('cg_incoming'); setTimeout(()=>loadExternal(JSON.parse(inc)),0); } }catch(e){}
+
+// URL-вариант входящих
+try{
+  const q=new URLSearchParams(location.search);
+  if(q.get('text')||q.get('subject')){
+    loadExternal({subject:q.get('subject')||undefined, text:q.get('text')||undefined, answerKey:q.get('key')||undefined, studentWork:q.get('work')||undefined, autoRun:q.get('autoRun')!=='0'});
+  }
+}catch(e){}
+
+// Регистрация в мосте Gen API (если он есть)
+if(window.GeneratorAPI && typeof window.GeneratorAPI.register==='function'){
+  try{ window.GeneratorAPI.register({criteria:{href:'criteria-generator.html',endpoint:'/api/gen/criteria',method:'POST'}}); }catch(e){ console.warn('[criteria] register:', e); }
+} else {
+  console.info('[criteria] GeneratorAPI не найден — используется прямой вызов proxy.gen-api.ru');
+}
+
+updateApiStatus();
+refreshAll(); show(1);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Аудиоконтент — НейроДиалог</title>
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800;900&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+/* ═══════════════════════════════════════════════
+   TOKENS & RESET
+═══════════════════════════════════════════════ */
+:root {
+  --teal-50:  #f0fdfc;
+  --teal-100: #ccfbf1;
+  --teal-200: #99f6e4;
+  --teal-300: #5eead4;
+  --teal-400: #2dd4bf;
+  --teal-500: #14b8a6;
+  --teal-600: #0d9488;
+  --teal-700: #0f766e;
+  --teal-800: #115e59;
+  --teal-900: #134e4a;
+
+  --ink:     #0f2927;
+  --ink-mid: #1f4f4a;
+  --ink-soft:#4a7c75;
+  --muted:   #7fb5b0;
+  --border:  #a5d8d3;
+  --border-light: #cef2ef;
+
+  --bg:      #edfafa;
+  --surface: #ffffff;
+  --surface2:#f4fefe;
+
+  --radius:  20px;
+  --shadow:  0 4px 24px rgba(13,148,136,0.10);
+  --shadow-lg: 0 12px 40px rgba(13,148,136,0.16);
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  overflow-x: auto;
+  padding-bottom: 80px; /* место для фиксированной кнопки */
+}
+body::before {
+  content:'';
+  position: fixed; inset:0;
+  background-image:
+    linear-gradient(rgba(20,184,166,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20,184,166,0.06) 1px, transparent 1px);
+  background-size: 36px 36px;
+  pointer-events:none; z-index:0;
+}
+.container {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  position: relative;
+  z-index: 1;
+}
+.page-title {
+  font-family: 'Raleway', sans-serif;
+  font-weight: 800;
+  font-size: 1.6rem;
+  background: linear-gradient(135deg, #0d9488, #0891b2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.back-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 8px 20px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: all .2s;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+.back-home:hover {
+  border-color: var(--teal-500);
+  color: var(--teal-700);
+  background: var(--teal-50);
+}
+.choice-grid {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin: 40px 0;
+}
+.choice-card {
+  flex: 1;
+  min-width: 240px;
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  padding: 28px 20px;
+  cursor: pointer;
+  transition: all .25s ease;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+.choice-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--border);
+}
+.choice-icon { font-size: 3rem; margin-bottom: 16px; }
+.choice-card h3 { font-family: 'Raleway', sans-serif; font-weight: 800; font-size: 1.2rem; margin-bottom: 8px; color: var(--ink); }
+.choice-card p { font-size: 0.85rem; color: var(--ink-soft); }
+
+/* === Белый контейнер для слайдов === */
+.slide-white-container {
+  background: #ffffff;
+  border-radius: var(--radius);
+  padding: 32px 28px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-light);
+  margin-bottom: 24px;
+}
+.slide-title {
+  font-family: 'Raleway', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--teal-700);
+  margin-bottom: 24px;
+  text-align: center;
+}
+.images-row {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 25px 0;
+}
+.image-card {
+  text-align: center;
+  max-width: 320px;
+  background: var(--surface2);
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid var(--border-light);
+}
+.image-card img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+.image-card p {
+  font-weight: 600;
+  color: var(--ink-mid);
+  font-size: 0.9rem;
+}
+.crystals-row {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 30px 0;
+}
+.crystal-card {
+  text-align: center;
+  flex: 1;
+  min-width: 180px;
+  background: var(--surface2);
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid var(--border-light);
+}
+.crystal-card img { max-width: 180px; margin-bottom: 12px; }
+.crystal-desc { font-size: 0.8rem; color: var(--ink-mid); line-height: 1.5; }
+.volcano-layout {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  margin: 20px 0;
+}
+.volcano-left, .volcano-right { flex: 1; min-width: 200px; }
+.volcano-term { font-weight: 800; color: var(--teal-700); }
+.volcano-bottom {
+  margin-top: 20px;
+  padding: 16px;
+  background: var(--teal-50);
+  border-radius: 16px;
+}
+.dash-list { list-style-type: "– "; padding-left: 1.5em; margin-top: 8px; }
+.dash-list li { margin-bottom: 4px; font-size: 0.75rem; color: var(--ink-mid); }
+
+/* Кнопки аудио */
+.tts-btn {
+  padding: 8px 20px;
+  border-radius: 16px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Nunito', sans-serif;
+}
+.tts-btn.green { background: var(--teal-600); color: white; }
+.tts-btn.green:hover { background: var(--teal-700); transform: translateY(-2px); }
+.tts-btn.red { background: #ef4444; color: white; }
+.tts-btn.red:hover { background: #dc2626; transform: translateY(-2px); }
+.audio-ctrl-row { display: flex; gap: 12px; margin: 16px 0; flex-wrap: wrap; }
+.blink-hand { animation: blink 1s infinite; display: inline-block; }
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+.continue-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 24px;
+}
+.try-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  background: var(--teal-600);
+  color: white;
+  border-radius: 16px;
+  text-decoration: none;
+  font-weight: 700;
+  transition: all .2s;
+  border: none;
+  cursor: pointer;
+}
+.try-btn:hover { background: var(--teal-700); transform: translateY(-2px); }
+
+/* === ЕДИНАЯ ФИКСИРОВАННАЯ КНОПКА НАЗАД === */
+.back-btn-fixed {
+  position: fixed;
+  bottom: 10px;
+  left: 24px;
+  background: #1bb8b3;
+  backdrop-filter: blur(8px);
+  color: white;
+  text-decoration: none;
+  
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  font-family: 'Raleway', sans-serif;
+}
+.back-btn-fixed i { margin-right: 8px; }
+.back-btn-fixed:hover {
+  background: #074844;
+  transform: translateY(-2px);
+}
+
+/* Скрытие / показ страниц */
+.page { display: none; }
+.page.active { display: block; }
+
+@media (max-width: 760px) {
+  .container { padding: 20px 16px; }
+  .choice-grid { flex-direction: column; }
+  .images-row { flex-direction: column; align-items: center; }
+  .volcano-layout { flex-direction: column; }
+  .volcano-layout > div:nth-child(2) { order: -1; }
+  .slide-white-container { padding: 20px 16px; }
+  .back-btn-fixed {
+    bottom: 16px;
+    left: 16px;
+    padding: 12px 20px;
+    font-size: 13px;
+    border-radius: 16px;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== СТРАНИЦА 1: Выбор учителя ==================== -->
+<div id="page1" class="page active">
+  <div class="container">
+    <a href="../index.html" class="back-home"><i class="fa-solid fa-arrow-left"></i> Все инструменты</a>
+    <div class="page-title"><i class="fa-solid fa-headphones" style="color: #0d9488;"></i> Аудиоконтент</div>
+    <div class="choice-grid">
+      <div class="choice-card" onclick="showPage(11)"><div class="choice-icon"><i class="fa-solid fa-flask"></i></div><h3>Химия</h3><p>Ионные кристаллические решётки</p></div>
+      <div class="choice-card" onclick="showPage(5)"><div class="choice-icon"><i class="fa-solid fa-bacterium"></i></div><h3>Биология</h3><p>Комменсализм, нахлебничество</p></div>
+      <div class="choice-card" onclick="showPage(17)"><div class="choice-icon"><i class="fa-solid fa-compass"></i></div><h3>География</h3><p>Строение вулкана</p></div>
+    </div>
+  </div>
+  <a href="../index.html" class="back-btn-fixed"><i class="fas fa-arrow-left"></i> Назад</a>
+</div>
+
+<!-- ==================== СТРАНИЦА 5: Комменсализм (Биология) ==================== -->
+<div id="page5" class="page">
+  <div class="container">
+    <div class="slide-white-container">
+      <h1 class="slide-title">КОММЕНСАЛИЗМ</h1>
+      <div class="images-row">
+        <div class="image-card">
+          <img src="img/kom1.png" alt="комменсализм">
+          <p style="font-weight:normal; font-size: 14px; max-width: 300px;">Маленькая птица стоит в пасти крокодила и выклёвывает остатки пищи и паразитов из его зубов</p>
+          <ul class="dash-list" style="text-align: left;">
+            <li>Птица получает пищу – выгоду</li>
+            <li>Крокодил получает чистку зубов – тоже выгоду</li>
+            <li>Оба участника получают пользу и не вредят друг другу.</li>
+          </ul>
+        </div>
+        <div class="image-card">
+          <img src="img/kom3.png" alt="комменсализм пример">
+          <p style="font-weight:normal; font-size: 14px; max-width: 300px;">Пример комменсализма, но с элементами конкуренции</p>
+          <ul class="dash-list" style="text-align: left;">
+            <li>Львы активно питаются добычей (буйволом).</li>
+            <li>Гиены стоят рядом, ожидая, когда смогут получить остатки</li>
+            <li>Они не охотились, но хотят воспользоваться результатом охоты львов</li>
+          </ul>
+        </div>
+      </div>
+      <audio id="komAudio_p5"><source src="src/Audio_bio.mp3" type="audio/mpeg"></audio>
+      <div class="audio-ctrl-row">
+        <button class="tts-btn green" onclick="(function(){var a=document.getElementById('komAudio_p5');a.currentTime=0;a.play();})()"><span class="blink-hand">&#9654;</span> Старт аудио</button>
+        <button class="tts-btn red" onclick="(function(){var a=document.getElementById('komAudio_p5');a.pause();a.currentTime=0;})()">&#9632; Стоп</button>
+        <button class="tts-btn" style="background:var(--teal-50);color:var(--teal-700);border:1px solid var(--border);" onclick="showPage(1)"><i class="fas fa-arrow-left"></i> Назад</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== СТРАНИЦА 11: Ионная решётка (Химия) ==================== -->
+<div id="page11" class="page">
+  <div class="container">
+    <div class="slide-white-container">
+      <h1 class="slide-title">ИОННАЯ РЕШЁТКА</h1>
+      <div class="crystals-row">
+        <div class="crystal-card">
+          <img src="img/kom4.png" alt="NaCl">
+          <p class="crystal-desc">Каждый ион окружён шестью противоположными – это типичная ионная решётка с координационным числом 6</p>
+        </div>
+        <div class="crystal-card">
+          <img src="img/kom5.png" alt="CsCl">
+          <p class="crystal-desc">Координационное число – 8, то есть каждый ион окружён восемью противоположными</p>
+        </div>
+        <div class="crystal-card">
+          <img src="img/kom6.png" alt="CaF₂">
+          <p class="crystal-desc">Это ионная решётка с высокой симметрией и плотной упаковкой</p>
+        </div>
+      </div>
+      <audio id="komAudio_p11"><source src="src/Audio_chem.mp3" type="audio/mpeg"></audio>
+      <div class="audio-ctrl-row">
+        <button class="tts-btn green" onclick="(function(){var a=document.getElementById('komAudio_p11');a.currentTime=0;a.play();})()"><span class="blink-hand">&#9654;</span> Старт аудио</button>
+        <button class="tts-btn red" onclick="(function(){var a=document.getElementById('komAudio_p11');a.pause();a.currentTime=0;})()">&#9632; Стоп</button>
+        <button class="tts-btn" style="background:var(--teal-50);color:var(--teal-700);border:1px solid var(--border);" onclick="showPage(1)"><i class="fas fa-arrow-left"></i> Назад</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== СТРАНИЦА 17: Строение вулкана (География) ==================== -->
+<div id="page17" class="page">
+  <div class="container">
+    <div class="slide-white-container">
+      <h1 class="slide-title">СТРОЕНИЕ ВУЛКАНА</h1>
+      <div class="volcano-layout">
+        <div class="volcano-left">
+          <p><span class="volcano-term">Жерло</span> – трубообразный канал, по которому магма изливается на поверхность</p>
+          <br>
+          <p><span class="volcano-term">Вулканический очаг</span> – подземный резервуар магмы</p>
+        </div>
+        <div style="flex:1; text-align:center; min-width:280px;">
+          <img src="img/kom7.png" alt="Строение вулкана" style="max-width:100%; border-radius:12px;">
+        </div>
+        <div class="volcano-right">
+          <p><span class="volcano-term">Кратер</span> (от греч. «кратер» – чаша) – чашеобразное углубление на плоской вершине вулкана</p>
+          <br>
+          <p><span class="volcano-term">Боковой кратер</span> – побочный кратер вулкана, расположенный на его склоне и представляющий собой окончание выводного канала, отходящего от центрального жерла</p>
+        </div>
+      </div>
+      <div class="volcano-bottom">
+        <p><span class="volcano-term">Вулкан</span> – возвышенность (чаще всего гора конусообразной формы), возникающая над каналами и трещинами в земной коре, по которым на земную поверхность извергаются лава, пепел, горячие газы, пары воды и обломки горных пород</p>
+      </div>
+      <audio id="komAudio_p17"><source src="src/Audio_geo.mp3" type="audio/mpeg"></audio>
+      <div class="audio-ctrl-row">
+        <button class="tts-btn green" onclick="(function(){var a=document.getElementById('komAudio_p17');a.currentTime=0;a.play();})()"><span class="blink-hand">&#9654;</span> Старт аудио</button>
+        <button class="tts-btn red" onclick="(function(){var a=document.getElementById('komAudio_p17');a.pause();a.currentTime=0;})()">&#9632; Стоп</button>
+        <button class="tts-btn" style="background:var(--teal-50);color:var(--teal-700);border:1px solid var(--border);" onclick="showPage(1)"><i class="fas fa-arrow-left"></i> Назад</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ЕДИНАЯ КНОПКА НАЗАД (всегда видна, кроме главной страницы) ===== -->
+<button id="backToStartBtn" class="back-btn-fixed" onclick="goBackToIndex()" style="display:none;">
+  <i class="fas fa-arrow-left"></i> Назад
+</button>
+
+<script>
+  function showPage(pageNum) {
+    document.querySelectorAll('.page').forEach(page => { page.classList.remove('active'); });
+    const target = document.getElementById('page' + pageNum);
+    if (target) target.classList.add('active');
+    window.scrollTo(0, 0);
+    
+    // Показываем кнопку "Назад" только НЕ на главной странице (page1)
+    const backBtn = document.getElementById('backToStartBtn');
+    if (pageNum === 1) {
+      backBtn.style.display = 'none';
+    } else {
+      backBtn.style.display = 'inline-flex';
+    }
+  }
+
+  // Функция для кнопки "Назад" с прокруткой к tts_free
+  function goBackToIndex() {
+    // Сохраняем флаг с ID элемента tts_free
+    localStorage.setItem('scrollToElement', 'tts_free');
+    
+    // Пытаемся вернуться на предыдущую страницу
+    if (document.referrer) {
+      window.history.back();
+    } else {
+      window.location.href = '../index.html';
+    }
+  }
+
+  // При загрузке — главная страница, кнопка скрыта
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('backToStartBtn').style.display = 'none';
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чат с Дмитрием Менделеевым — Научная версия</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: #d4e8f0; 
+            font-family: 'Inter', sans-serif; 
+            min-height: 100vh; 
+            padding: 20px; 
+            position: relative;
+            transition: background 0.3s, color 0.3s;
+        }
+        body.dark-mode {
+            background: #1a2a2a;
+            color: #e8f0f0;
+        }
+        .chat-container { 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            background: #ffffff; 
+            border-radius: 28px; 
+            box-shadow: 0 12px 32px rgba(0,0,0,0.08); 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            height: 85vh; 
+            max-height: 750px;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        body.dark-mode .chat-container {
+            background: #1e2e2e;
+            border: 1px solid #3a5a5a;
+        }
+        .chat-header { 
+            background: linear-gradient(135deg, #00677e, #0e5a5a); 
+            padding: 1rem 1.5rem; 
+            color: white; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            flex-wrap: wrap; 
+            gap: 8px; 
+        }
+        .persona-info h1 { font-size: 1.3rem; display: flex; align-items: center; gap: 8px; }
+        .header-controls {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .theme-toggle, .voice-toggle {
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .theme-toggle:hover, .voice-toggle:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .voice-settings-toggle {
+            background: rgba(255,215,0,0.2);
+            border: 1px solid rgba(255,215,0,0.3);
+            color: #ffd700;
+            padding: 6px 10px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .voice-settings-toggle:hover {
+            background: rgba(255,215,0,0.3);
+        }
+        
+        .voice-settings-panel {
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(12px);
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: none;
+            flex-wrap: wrap;
+            gap: 14px 24px;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        .voice-settings-panel.open {
+            display: flex;
+        }
+        body.dark-mode .voice-settings-panel {
+            background: rgba(0,0,0,0.8);
+        }
+        .voice-setting-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .voice-setting-group label {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.7rem;
+            font-weight: 500;
+            min-width: 50px;
+        }
+        .voice-setting-group label .age-icon {
+            font-size: 0.85rem;
+        }
+        .voice-setting-group input[type="range"] {
+            width: 100px;
+            height: 4px;
+            -webkit-appearance: none;
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+        }
+        .voice-setting-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #ffd700;
+            cursor: pointer;
+        }
+        .voice-setting-group input[type="range"]::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #ffd700;
+            cursor: pointer;
+            border: none;
+        }
+        .voice-setting-value {
+            color: #ffd700;
+            font-size: 0.7rem;
+            font-weight: 600;
+            min-width: 28px;
+            text-align: center;
+        }
+        .voice-setting-value.age-value {
+            min-width: 60px;
+            font-size: 0.65rem;
+        }
+        .voice-selector-settings {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            outline: none;
+            max-width: 160px;
+        }
+        .voice-selector-settings option {
+            background: #1a3a3a;
+            color: white;
+        }
+        .voice-test-btn-settings {
+            background: rgba(255,215,0,0.2);
+            border: 1px solid rgba(255,215,0,0.3);
+            color: #ffd700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .voice-test-btn-settings:hover {
+            background: rgba(255,215,0,0.35);
+        }
+        .voice-reset-btn {
+            background: rgba(255,100,100,0.15);
+            border: 1px solid rgba(255,100,100,0.2);
+            color: #ff8a8a;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .voice-reset-btn:hover {
+            background: rgba(255,100,100,0.3);
+        }
+        @media (max-width: 680px) {
+            .voice-setting-group input[type="range"] { width: 70px; }
+            .voice-settings-panel { padding: 12px 14px; gap: 10px; }
+            .voice-selector-settings { max-width: 120px; font-size: 0.65rem; }
+            .voice-setting-group label { font-size: 0.6rem; min-width: 40px; }
+            .voice-setting-value.age-value { min-width: 50px; font-size: 0.6rem; }
+        }
+
+        .api-panel { background: #eef3f8; padding: 10px 18px; border-bottom: 1px solid #d0e2ee; }
+        body.dark-mode .api-panel {
+            background: #1e3a3a;
+            border-bottom-color: #3a5a5a;
+        }
+        .api-inner { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+        .api-input { flex: 1; padding: 6px 14px; border: 1px solid #c5d9e8; border-radius: 40px; font-size: 0.75rem; outline: none; min-width: 150px; }
+        body.dark-mode .api-input {
+            background: #1e2e2e;
+            border-color: #3a5a5a;
+            color: #d0e8e8;
+        }
+        .api-btn { background: #00677e; border: none; padding: 5px 12px; border-radius: 40px; color: white; cursor: pointer; font-size: 0.65rem; transition: 0.2s; }
+        .api-btn:hover { background: #0e5a5a; }
+        .api-status { font-size: 0.65rem; color: #00677e; font-weight: 500; }
+        body.dark-mode .api-status { color: #8ac8c8; }
+        
+        .chat-messages { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 1.2rem; 
+            background: #fafcfd; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 14px; 
+            transition: background 0.3s;
+        }
+        body.dark-mode .chat-messages {
+            background: #152525;
+        }
+        .message { display: flex; flex-direction: column; max-width: 80%; animation: fadeSlide 0.25s ease; position: relative; }
+        @keyframes fadeSlide { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .user-message { align-self: flex-end; }
+        .bot-message { align-self: flex-start; }
+        .msg-name { font-size: 0.65rem; font-weight: 600; margin-bottom: 3px; color: #8a9aaa; padding-left: 8px; }
+        body.dark-mode .msg-name { color: #8ab0b0; }
+        .user-message .msg-name { text-align: right; color: #00677e; padding-right: 8px; }
+        body.dark-mode .user-message .msg-name { color: #6ac8c8; }
+        .msg-bubble { 
+            background: #eef3f8; 
+            padding: 8px 16px; 
+            border-radius: 20px; 
+            border-top-left-radius: 4px; 
+            line-height: 1.5; 
+            font-size: 0.9rem; 
+            color: #1a3a4a;
+            word-wrap: break-word;
+            transition: background 0.3s, color 0.3s;
+        }
+        body.dark-mode .msg-bubble {
+            background: #1e3a3a;
+            color: #d0e8e8;
+        }
+        .user-message .msg-bubble { background: #cce8e8; border-top-right-radius: 4px; border-top-left-radius: 18px; }
+        body.dark-mode .user-message .msg-bubble { background: #1a5a5a; }
+        .bot-message .msg-bubble { background: #ffffff; border: 1px solid #d0e2ee; }
+        body.dark-mode .bot-message .msg-bubble { background: #1e3a3a; border-color: #3a5a5a; }
+        
+        .message-actions {
+            display: flex;
+            gap: 4px;
+            margin-top: 3px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .bot-message:hover .message-actions,
+        .user-message:hover .message-actions {
+            opacity: 1;
+        }
+        .message-actions button {
+            background: transparent;
+            border: none;
+            color: #8a9aaa;
+            cursor: pointer;
+            font-size: 0.7rem;
+            padding: 1px 6px;
+            border-radius: 10px;
+            transition: 0.2s;
+        }
+        .message-actions button:hover {
+            background: rgba(0,0,0,0.05);
+            color: #00677e;
+        }
+        body.dark-mode .message-actions button {
+            color: #6a8a8a;
+        }
+        body.dark-mode .message-actions button:hover {
+            background: rgba(255,255,255,0.05);
+            color: #8ac8c8;
+        }
+        .regenerate-btn {
+            background: #00677e !important;
+            color: white !important;
+            padding: 1px 12px !important;
+            border-radius: 30px !important;
+            font-size: 0.65rem !important;
+        }
+        .regenerate-btn:hover {
+            background: #0e5a5a !important;
+            color: white !important;
+        }
+        .edit-btn:hover { color: #f0a030 !important; }
+        .delete-btn:hover { color: #e06050 !important; }
+        .copy-btn:hover { color: #40a0d0 !important; }
+
+        .chat-input-area { 
+            background: white; 
+            padding: 0.8rem 1.2rem; 
+            border-top: 1px solid #dce5ef; 
+            display: flex; 
+            gap: 10px; 
+            align-items: center; 
+            flex-wrap: wrap;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        body.dark-mode .chat-input-area {
+            background: #1e2e2e;
+            border-top-color: #3a5a5a;
+        }
+        .chat-input-area input { 
+            flex: 1; 
+            padding: 10px 18px; 
+            border-radius: 40px; 
+            border: 1px solid #c5d9e8; 
+            font-family: inherit; 
+            font-size: 0.85rem; 
+            outline: none; 
+            min-width: 120px;
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
+        }
+        body.dark-mode .chat-input-area input {
+            background: #1a2a2a;
+            border-color: #3a5a5a;
+            color: #d0e8e8;
+        }
+        .chat-input-area input:focus { border-color: #00677e; }
+        .voice-btn, .send-btn, .reset-btn { 
+            background: #00677e; 
+            border: none; 
+            width: 42px; 
+            height: 42px; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: white; 
+            font-size: 1rem; 
+            flex-shrink: 0; 
+        }
+        .voice-btn { background: #00677e; }
+        .voice-btn:hover:not(:disabled) { background: #0e5a5a; transform: scale(1.02); }
+        .voice-btn:disabled { opacity: 0.4; cursor: not-allowed; background: #666; }
+        .voice-btn.listening { background: #c0392b !important; animation: pulseMic 1.2s infinite; box-shadow: 0 0 0 4px rgba(192, 57, 43, 0.4); }
+        @keyframes pulseMic { 
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(192, 57, 43, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(192, 57, 43, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(192, 57, 43, 0.4); }
+        }
+        .reset-btn { background: #f0f4f8; color: #7a8a9a; border: 1px solid #d0dee8; }
+        body.dark-mode .reset-btn { background: #1e3a3a; color: #8ab0b0; border-color: #3a5a5a; }
+        .reset-btn:hover { background: #e0e8f0; }
+        body.dark-mode .reset-btn:hover { background: #2a4a4a; }
+        .send-btn { background: #00677e; }
+        .send-btn:hover { background: #0e5a5a; }
+        .clear-chat { 
+            background: #f0f4f8; 
+            border: 1px solid #d0dee8; 
+            padding: 5px 14px; 
+            border-radius: 30px; 
+            cursor: pointer; 
+            color: #7a8a9a; 
+            transition: 0.2s; 
+            font-size: 0.75rem; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 4px; 
+            flex-shrink: 0; 
+        }
+        body.dark-mode .clear-chat {
+            background: #1e3a3a;
+            border-color: #3a5a5a;
+            color: #8ab0b0;
+        }
+        .clear-chat:hover { background: #ffe0e0; border-color: #cc8888; color: #cc5555; }
+        .typing { 
+            display: none; 
+            padding: 6px 14px; 
+            background: #eef3f0; 
+            border-radius: 24px; 
+            width: fit-content; 
+            font-size: 0.75rem; 
+            color: #00677e; 
+            margin-left: 20px; 
+            margin-bottom: 10px;
+            transition: background 0.3s, color 0.3s;
+        }
+        body.dark-mode .typing {
+            background: #1e3a3a;
+            color: #8ac8c8;
+        }
+        .back-btn-fixed { 
+            position: fixed; 
+            bottom: 20px; 
+            left: 20px; 
+            padding: 8px 18px; 
+            background: #1bb8b3; 
+            color: #fff; 
+            font-weight: 700; 
+            font-size: 13px; 
+            border-radius: 10px; 
+            text-decoration: none; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15); 
+            transition: background .15s, transform .1s; 
+            z-index: 1000; 
+        }
+        .back-btn-fixed:hover { background: #17a5a0; transform: translateY(-2px); }
+        .mendeleev-icon { 
+            width: 180px; 
+            height: 120px; 
+            margin-right: auto; 
+            display: block;
+            transition: transform 0.3s;
+        }
+        .mendeleev-icon.thinking {
+            animation: subtleBob 0.6s ease-in-out infinite;
+        }
+        @keyframes subtleBob {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+        @media (max-width: 680px) { 
+            .message { max-width: 95%; } 
+            .api-inner { flex-direction: column; align-items: stretch; } 
+            .voice-btn, .send-btn, .reset-btn { width: 38px; height: 38px; font-size: 0.85rem; } 
+            .clear-chat { padding: 4px 10px; font-size: 0.7rem; } 
+            .chat-input-area { gap: 6px; padding: 0.6rem 0.8rem; }
+            .chat-input-area input { min-width: 100px; padding: 8px 14px; font-size: 0.8rem; }
+            .mendeleev-icon { width: 120px; height: 80px; }
+            .header-controls { width: 100%; justify-content: flex-end; }
+            .chat-header { padding: 0.8rem 1rem; }
+            .persona-info h1 { font-size: 1.1rem; }
+        }
+        .toast-notification {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            z-index: 99999;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            max-width: 300px;
+            animation: slideInRight 0.3s ease;
+            pointer-events: none;
+        }
+        .toast-success { background: #00677e; color: #fff; }
+        .toast-error { background: #dc2626; color: #fff; }
+        .toast-info { background: #2c7a7a; color: #fff; }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .edit-mode .msg-bubble {
+            outline: 2px solid #00677e;
+            background: #e8fff0 !important;
+        }
+        body.dark-mode .edit-mode .msg-bubble {
+            background: #1a4a4a !important;
+            outline-color: #6ac8c8;
+        }
+        .hidden { display: none !important; }
+        .mic-status {
+            font-size: 0.6rem;
+            color: rgba(255,255,255,0.6);
+            margin-left: 4px;
+        }
+        .mic-status.active {
+            color: #ff6b6b;
+            animation: pulseMicStatus 1s ease-in-out infinite;
+        }
+        @keyframes pulseMicStatus {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn-fixed">← Назад</a>
+
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="persona-info">
+                <img src="img/medeleev.png" alt="Менделеев" class="mendeleev-icon" id="mendeleevIcon">
+                <h1>Дмитрий Менделеев</h1>
+            </div>
+            <div class="header-controls">
+                <button class="voice-settings-toggle" id="voiceSettingsToggle" title="Настройки голоса">
+                    <i class="fas fa-sliders-h"></i> <span>Голос</span>
+                </button>
+                <button class="voice-toggle" id="voiceToggleBtn" title="Включить/выключить озвучку">
+                    <i class="fas fa-volume-up"></i> <span id="voiceToggleLabel">Озвучка</span>
+                </button>
+                <button class="theme-toggle" id="themeToggleBtn">
+                    <i class="fas fa-moon"></i> <span id="themeLabel"></span>
+                </button>
+            </div>
+        </div>
+
+        <div class="voice-settings-panel" id="voiceSettingsPanel">
+            <div class="voice-setting-group">
+                <label><i class="fas fa-tachometer-alt"></i> Скорость</label>
+                <input type="range" id="voiceRate" min="0.5" max="2.0" step="0.05" value="0.85">
+                <span class="voice-setting-value" id="voiceRateValue">0.85</span>
+            </div>
+            <div class="voice-setting-group">
+                <label><i class="fas fa-music"></i> Тон</label>
+                <input type="range" id="voicePitch" min="0.5" max="2.0" step="0.05" value="0.95">
+                <span class="voice-setting-value" id="voicePitchValue">0.95</span>
+            </div>
+            <div class="voice-setting-group">
+                <label><i class="fas fa-volume-up"></i> Громкость</label>
+                <input type="range" id="voiceVolume" min="0.0" max="1.0" step="0.05" value="1.0">
+                <span class="voice-setting-value" id="voiceVolumeValue">1.0</span>
+            </div>
+            <div class="voice-setting-group">
+                <label><span class="age-icon">🧓</span> Возраст</label>
+                <input type="range" id="voiceAge" min="-1.0" max="1.0" step="0.05" value="0.0">
+                <span class="voice-setting-value age-value" id="voiceAgeValue">⚖️ Нейтральный</span>
+            </div>
+            <div class="voice-setting-group">
+                <label><i class="fas fa-microphone"></i> Голос</label>
+                <select class="voice-selector-settings" id="voiceSelectorSettings">
+                    <option value="default">🎙️ Авто (мужской)</option>
+                </select>
+            </div>
+            <div class="voice-setting-group">
+                <button class="voice-test-btn-settings" id="voiceTestBtnSettings"><i class="fas fa-play"></i> Тест</button>
+                <button class="voice-reset-btn" id="voiceResetBtn"><i class="fas fa-undo"></i> Сброс</button>
+            </div>
+        </div>
+
+        <div class="api-panel">
+            <div class="api-inner">
+                <span class="api-status" id="apiStatus"><i class="fas fa-check-circle" style="color:#00677e;"></i> API: готов</span>
+                <input class="api-input" id="apiKeyInput" type="password" placeholder="API ключ (измените при необходимости)" value="">
+                <button class="api-btn" id="apiSaveBtn"><i class="fas fa-save"></i> Сохранить ключ</button>
+            </div>
+        </div>
+
+        <div class="chat-messages" id="chatMessages"></div>
+
+        <div class="chat-input-area">
+            <input type="text" id="userInput" placeholder="Спросите Менделеева о химии, элементах..." autocomplete="off">
+            <button class="voice-btn" id="voiceInputBtn" title="Голосовой ввод (русский язык)">
+                <i class="fas fa-microphone"></i>
+            </button>
+            <button class="reset-btn" id="resetChatBtn" title="Начать новый диалог">
+                <i class="fas fa-rotate-right"></i>
+            </button>
+            <button class="send-btn" id="sendMsgBtn"><i class="fas fa-paper-plane"></i></button>
+            <button class="clear-chat" id="clearChatBtn"><i class="fas fa-trash-alt"></i> Очистить</button>
+            <button class="clear-chat" id="exportChatBtn" style="background:#00677e;color:white;border-color:#00677e;">
+                <i class="fas fa-download"></i> Экспорт
+            </button>
+        </div>
+        <div id="typingIndicator" class="typing"><i class="fas fa-spinner fa-pulse"></i> Менделеев размышляет...</div>
+    </div>
+
+    <script>
+    /// ======================== КОНФИГУРАЦИЯ ========================
+    const API_KEY_STORAGE = 'gen_api_key';
+    const API_URL = 'https://proxy.gen-api.ru/v1/chat/completions';
+    const MODEL = 'gemini-2-5-flash-lite';
+
+    // ======================== НАСТРОЙКИ ГОЛОСА ========================
+    const VOICE_SETTINGS_STORAGE = 'mendeleev_voice_settings';
+    let voiceSettings = {
+        rate: 0.85,
+        pitch: 0.95,
+        volume: 1.0,
+        age: 0.0,
+        voiceName: 'default'
+    };
+
+    function loadVoiceSettings() {
+        try {
+            const saved = localStorage.getItem(VOICE_SETTINGS_STORAGE);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                voiceSettings = { ...voiceSettings, ...parsed };
+            }
+        } catch (e) {}
+    }
+    function saveVoiceSettings() {
+        try {
+            localStorage.setItem(VOICE_SETTINGS_STORAGE, JSON.stringify(voiceSettings));
+        } catch (e) {}
+    }
+    loadVoiceSettings();
+
+    // ======================== ПЕРЕМЕННЫЕ ========================
+    let currentApiKey = localStorage.getItem(API_KEY_STORAGE);
+    let messageHistory = [];
+    let isWaiting = false;
+    let isDarkMode = localStorage.getItem('mendeleev_dark_mode') === 'true';
+    let isTTSEnabled = localStorage.getItem('mendeleev_tts_enabled') !== 'false';
+    let lastUserMessage = '';
+    let lastBotMessageElement = null;
+    let isEditing = false;
+    let editingMessageElement = null;
+    let selectedVoice = null;
+    let availableVoices = [];
+    let isVoicePanelOpen = false;
+
+    // ======================== ПРИВЕТСТВИЯ ========================
+    const GREETINGS = [
+        "Здравствуйте! Я Дмитрий Иванович Менделеев, создатель периодической таблицы химических элементов. Задавайте вопросы о химии и науке!",
+        "Приветствую! Периодический закон — это ключ к пониманию свойств элементов. Спрашивайте о чём угодно!",
+        "Добрый день! Хотите узнать, как устроена периодическая система? Я с радостью расскажу!",
+        "Здравствуйте! Химия — это наука о превращениях веществ. Давайте обсудим их вместе!",
+        "Привет! Знаете ли вы, что свойства элементов зависят от их атомного веса? Это основа периодического закона!",
+        "Добро пожаловать! Моя таблица — это не просто список, это система. Спрашивайте о любом элементе!",
+        "Здравствуйте! Химия пронизывает всё вокруг. Давайте погрузимся в мир молекул и атомов!",
+        "Приветствую вас! Наука — это основа прогресса. Готов ответить на ваши вопросы о химии!"
+    ];
+
+    // ======================== СИСТЕМНЫЙ ПРОМПТ С ИСТОЧНИКАМИ И ПРИНЦИПОМ ИСТОРИЗМА ========================
+    function getSystemPrompt() {
+        return `
+Ты — Дмитрий Иванович Менделеев (1834–1907), великий русский химик, создатель Периодической таблицы химических элементов. Твоя задача – отвечать на русском языке научно, но доступно, строго в рамках научных представлений конца XIX — начала XX века (принцип историзма).
+
+**ПРИНЦИП ИСТОРИЗМА (ГЛАВНОЕ ПРАВИЛО):**
+Ты живёшь в 1890–1900-х годах. Ты НЕ ЗНАЕШЬ о:
+- строении атома (электроны, протоны, нейтроны, ядро)
+- квантовой механике и квантовых числах
+- изотопах и радиоактивности (кроме открытий Беккереля и Кюри, которые ты воспринимаешь как новость)
+- искусственных элементах (трансурановых)
+- современных квантово-химических теориях (орбитали, гибридизация, теория МО)
+- ДНК, генетике, молекулярной биологии
+- современных полимерах, наноматериалах
+- современных методах анализа (спектроскопия, хроматография, масс-спектрометрия)
+- теории относительности Эйнштейна
+- современных геополитических реалиях
+
+Ты описываешь химию исключительно на основе:
+- атомных весов (относительных атомных масс)
+- валентности и химических свойств элементов
+- периодического закона и таблицы
+- классических представлений о молекулах и химических связях (структурные формулы, валентные штрихи)
+- термохимии и закона Гесса
+- теории растворов (гидратация)
+- учения о химическом равновесии (Ле Шателье)
+
+Если вопрос касается явлений, открытых после 1907 года, ты должен честно ответить: "Это открытие было сделано после моей смерти, я не могу о нём судить", — и затем перевести разговор на то, что тебе известно из химии твоего времени.
+
+**ОСНОВНЫЕ НАУЧНЫЕ ИСТОЧНИКИ И ФАКТЫ (используй эти ссылки для формирования ответов):**
+
+📚 **Основные источники о жизни и научной деятельности:**
+- https://ru.wikipedia.org/wiki/Менделеев,_Дмитрий_Иванович
+- https://bfnm.ru/index.php/o-d-i-mendeleeve
+- https://www.vniim.ru/mendeleev.html
+- https://www.muctr.ru/university/about/history/mendeleev/
+- https://diletant.media/articles/43989219/
+
+🔬 **Ключевые научные концепции твоей эпохи (основывайся на этих источниках):**
+
+1. **Главный труд:** «Основы химии» (1869–1871, переиздания до 1906), где сформулирован периодический закон.
+2. **Периодический закон:** "Свойства простых тел, а также формы и свойства соединений элементов, находятся в периодической зависимости от величины атомных весов элементов."
+3. **Периодическая таблица:** систематизация всех известных элементов по группам (вертикальным рядам) и периодам (горизонтальным рядам).
+4. **Предсказание элементов:** ты предсказал существование ещё не открытых элементов (экаалюминий — галлий, 1875; экабор — скандий, 1879; экасилиций — германий, 1886; экамарганец — технеций, открыт в 1937).
+5. **Растворы и гидратация:** работы по теории растворов, гидратации и спиртоводным смесям (диссертация "О соединении спирта с водой").
+6. **Прочие достижения:** создание бездымного пороха (пироколлодий), исследования нефти и её перегонки, метрология (определение веса фунта, эталонные меры), воздухоплавание, экономика, демография, освоение Арктики.
+7. **Химические элементы:** на момент твоей жизни известно 63 элемента. Ты знаешь их атомные веса, валентности, основные соединения.
+
+**СТИЛЬ И МАНЕРА ОТВЕТА:**
+- Говори от первого лица как учёный-химик своего времени.
+- Отвечай кратко (2-4 предложения), но содержательно.
+- Используй термины: «периодический закон», «атомный вес», «группа», «период», «элемент», «валентность».
+- Используй характерные для твоей эпохи обороты: "Позвольте заметить...", "Как следует из моих исследований...", "Согласно периодическому закону...", "Я полагаю...", "Весьма любопытно, что..."
+- НИКОГДА не используй Markdown-разметку (звёздочки, подчёркивания, решётки).
+- Если вопрос выходит за пределы твоей эпохи, вежливо скажи: "Это открытие относится к периоду после 1907 года, и я, к сожалению, не могу о нём судить. Позвольте предложить обсудить то, что известно мне из химии — например, периодический закон или свойства элементов."
+- Всегда опирайся на факты из указанных выше источников. Если в них нет ответа на вопрос, честно признайся, что не знаешь, и предложи обсудить другую тему из химии твоего времени.
+
+**ПРИМЕРЫ ПРАВИЛЬНЫХ ОТВЕТОВ:**
+- На вопрос о строении атома: "В настоящее время я рассматриваю атом как неделимую частицу. Однако периодический закон позволяет предсказывать свойства элементов на основании их атомного веса. Это главный ключ к пониманию химии."
+- На вопрос о радиоактивности: "Господа Беккерель и Кюри недавно сделали замечательное открытие о самопроизвольном излучении некоторых веществ. Это явление требует дальнейшего изучения. Возможно, оно связано с внутренним строением атома, но пока это лишь гипотеза."
+- На вопрос о современных полимерах: "Мне известны такие вещества, как каучук и целлюлоза, но их молекулярная природа ещё не вполне ясна. Это открытие относится к периоду после моей смерти, я не могу о нём судить. Позвольте обсудить химию растворов или периодическую систему."
+`;
+    }
+
+    function getBotName() {
+        return 'Дмитрий Менделеев';
+    }
+
+    // ======================== DOM ЭЛЕМЕНТЫ ========================
+    const chatMessages = document.getElementById('chatMessages');
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendMsgBtn');
+    const clearBtn = document.getElementById('clearChatBtn');
+    const resetBtn = document.getElementById('resetChatBtn');
+    const exportBtn = document.getElementById('exportChatBtn');
+    const typingDiv = document.getElementById('typingIndicator');
+    const voiceBtn = document.getElementById('voiceInputBtn');
+    const micIcon = voiceBtn ? voiceBtn.querySelector('i') : null;
+    const themeToggle = document.getElementById('themeToggleBtn');
+    const themeLabel = document.getElementById('themeLabel');
+    const voiceToggle = document.getElementById('voiceToggleBtn');
+    const voiceToggleLabel = document.getElementById('voiceToggleLabel');
+    const mendeleevIcon = document.getElementById('mendeleevIcon');
+    const apiKeyInput = document.getElementById('apiKeyInput');
+    const apiSaveBtn = document.getElementById('apiSaveBtn');
+    const apiStatus = document.getElementById('apiStatus');
+    
+    const voiceSettingsToggle = document.getElementById('voiceSettingsToggle');
+    const voiceSettingsPanel = document.getElementById('voiceSettingsPanel');
+    const voiceRate = document.getElementById('voiceRate');
+    const voiceRateValue = document.getElementById('voiceRateValue');
+    const voicePitch = document.getElementById('voicePitch');
+    const voicePitchValue = document.getElementById('voicePitchValue');
+    const voiceVolume = document.getElementById('voiceVolume');
+    const voiceVolumeValue = document.getElementById('voiceVolumeValue');
+    const voiceAge = document.getElementById('voiceAge');
+    const voiceAgeValue = document.getElementById('voiceAgeValue');
+    const voiceSelectorSettings = document.getElementById('voiceSelectorSettings');
+    const voiceTestBtnSettings = document.getElementById('voiceTestBtnSettings');
+    const voiceResetBtn = document.getElementById('voiceResetBtn');
+
+    // ======================== ТЕМНАЯ ТЕМА ========================
+    function applyTheme(dark) {
+        isDarkMode = dark;
+        document.body.classList.toggle('dark-mode', dark);
+        themeLabel.textContent = dark ? '' : '';
+        themeToggle.querySelector('i').className = dark ? 'fas fa-sun' : 'fas fa-moon';
+        localStorage.setItem('mendeleev_dark_mode', String(dark));
+    }
+    applyTheme(isDarkMode);
+    themeToggle.addEventListener('click', () => applyTheme(!isDarkMode));
+
+    // ======================== TTS С ПОДДЕРЖКОЙ ВОЗРАСТА ========================
+    function isMaleVoice(voiceName) {
+        const maleKeywords = [
+            'male', 'men', 'man', 'guy', 'dude', 'father', 'uncle', 'grandpa',
+            'alex', 'daniel', 'david', 'michael', 'william', 'james', 'robert',
+            'john', 'andrew', 'thomas', 'george', 'charles', 'henry', 'richard',
+            'alexander', 'dmitry', 'sergey', 'vladimir', 'viktor', 'yuri',
+            'oleg', 'artem', 'maxim', 'ivan', 'pavel', 'mikhail', 'nikolai',
+            'microsoft andrew', 'microsoft daniel', 'microsoft david',
+            'google uk english male', 'google us english male',
+            'natural male', 'male voice', 'man voice'
+        ];
+        const lowerName = voiceName.toLowerCase();
+        for (const keyword of maleKeywords) {
+            if (lowerName.includes(keyword)) return true;
+        }
+        return false;
+    }
+
+    function getBestMaleVoice(voices) {
+        const ruMale = voices.filter(v => v.lang.startsWith('ru') && isMaleVoice(v.name));
+        const enMale = voices.filter(v => v.lang.startsWith('en') && isMaleVoice(v.name));
+        const otherMale = voices.filter(v => isMaleVoice(v.name));
+        if (ruMale.length > 0) return ruMale[0];
+        if (enMale.length > 0) return enMale[0];
+        if (otherMale.length > 0) return otherMale[0];
+        return null;
+    }
+
+    function getVoiceByName(voices, name) {
+        return voices.find(v => v.name === name) || null;
+    }
+
+    function populateVoiceSelector(voices) {
+        availableVoices = voices;
+        voiceSelectorSettings.innerHTML = '<option value="default">🎙️ Авто (мужской)</option>';
+        
+        const maleVoices = voices.filter(v => isMaleVoice(v.name));
+        const femaleVoices = voices.filter(v => !isMaleVoice(v.name) && v.lang.startsWith('ru'));
+        
+        if (maleVoices.length > 0) {
+            const group = document.createElement('optgroup');
+            group.label = 'Мужские голоса';
+            maleVoices.forEach(v => {
+                const opt = document.createElement('option');
+                opt.value = v.name;
+                opt.textContent = `${v.name} (${v.lang})`;
+                group.appendChild(opt);
+            });
+            voiceSelectorSettings.appendChild(group);
+        }
+        
+        if (femaleVoices.length > 0) {
+            const group = document.createElement('optgroup');
+            group.label = 'Женские голоса';
+            femaleVoices.forEach(v => {
+                const opt = document.createElement('option');
+                opt.value = v.name;
+                opt.textContent = `${v.name} (${v.lang})`;
+                group.appendChild(opt);
+            });
+            voiceSelectorSettings.appendChild(group);
+        }
+        
+        if (voiceSettings.voiceName && voiceSettings.voiceName !== 'default' && 
+            voiceSelectorSettings.querySelector(`option[value="${voiceSettings.voiceName}"]`)) {
+            voiceSelectorSettings.value = voiceSettings.voiceName;
+            selectedVoice = getVoiceByName(voices, voiceSettings.voiceName);
+        } else {
+            const best = getBestMaleVoice(voices);
+            if (best) {
+                voiceSelectorSettings.value = best.name;
+                selectedVoice = best;
+                voiceSettings.voiceName = best.name;
+                saveVoiceSettings();
+            }
+        }
+    }
+
+    function getSelectedVoiceForSpeech() {
+        const selectedValue = voiceSelectorSettings.value;
+        if (selectedValue === 'default') {
+            const best = getBestMaleVoice(availableVoices);
+            if (best) return best;
+            if (availableVoices.length > 0) return availableVoices[0];
+            return null;
+        }
+        return getVoiceByName(availableVoices, selectedValue);
+    }
+
+    function getAgeModifiers(ageValue) {
+        const clamped = Math.max(-1.0, Math.min(1.0, ageValue));
+        const pitchMod = 1.0 - (clamped * 0.3);
+        const rateMod = 1.0 - (clamped * 0.15);
+        return { pitchMod, rateMod };
+    }
+
+    function speakText(text) {
+        if (!isTTSEnabled) return;
+        if (!window.speechSynthesis) return;
+        if (text.length > 500) {
+            text = text.slice(0, 500) + '...';
+        }
+        
+        window.speechSynthesis.cancel();
+        
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'ru-RU';
+        
+        let baseRate = parseFloat(voiceRate.value) || 0.85;
+        let basePitch = parseFloat(voicePitch.value) || 0.95;
+        const volume = parseFloat(voiceVolume.value) || 1.0;
+        
+        const ageValue = parseFloat(voiceAge.value) || 0.0;
+        const { pitchMod, rateMod } = getAgeModifiers(ageValue);
+        
+        utterance.rate = baseRate * rateMod;
+        utterance.pitch = basePitch * pitchMod;
+        utterance.volume = volume;
+        
+        const voice = getSelectedVoiceForSpeech();
+        if (voice) {
+            utterance.voice = voice;
+        }
+        
+        const ageLabel = ageValue < -0.3 ? 'Молодой' : (ageValue > 0.3 ? 'Взрослый' : 'Нейтральный');
+        console.log(`🔊 Голос: ${voice?.name || 'стандартный'} | Возраст: ${ageLabel} (${ageValue.toFixed(2)}) | Скорость: ${utterance.rate.toFixed(2)} | Тон: ${utterance.pitch.toFixed(2)}`);
+        
+        utterance.onend = () => console.log('✅ Озвучка завершена');
+        utterance.onerror = (e) => console.warn('⚠️ Ошибка озвучки:', e);
+        
+        speechSynthesis.speak(utterance);
+    }
+
+    function testVoice() {
+        const testPhrases = [
+            "Здравствуйте! Меня зовут Дмитрий Менделеев.",
+            "Периодический закон — основа всей химии.",
+            "Элементы объединяются в группы и периоды.",
+            "Настройки голоса успешно применены."
+        ];
+        const phrase = testPhrases[Math.floor(Math.random() * testPhrases.length)];
+        speakText(phrase);
+        showToast(`🔊 Тест голоса: "${phrase}"`, 'info');
+    }
+
+    // ======================== УПРАВЛЕНИЕ ПАНЕЛЬЮ ГОЛОСА ========================
+    function toggleVoicePanel() {
+        isVoicePanelOpen = !isVoicePanelOpen;
+        voiceSettingsPanel.classList.toggle('open', isVoicePanelOpen);
+        voiceSettingsToggle.querySelector('span').textContent = isVoicePanelOpen ? 'Скрыть' : 'Голос';
+        voiceSettingsToggle.querySelector('i').className = isVoicePanelOpen ? 'fas fa-chevron-up' : 'fas fa-sliders-h';
+    }
+
+    voiceSettingsToggle.addEventListener('click', toggleVoicePanel);
+
+    function updateVoiceSetting(setting, value, displayElement, formatter = null) {
+        voiceSettings[setting] = parseFloat(value);
+        if (displayElement) {
+            if (formatter) {
+                displayElement.textContent = formatter(parseFloat(value));
+            } else {
+                displayElement.textContent = parseFloat(value).toFixed(2);
+            }
+        }
+        saveVoiceSettings();
+    }
+
+    voiceRate.addEventListener('input', () => {
+        updateVoiceSetting('rate', voiceRate.value, voiceRateValue);
+    });
+    voicePitch.addEventListener('input', () => {
+        updateVoiceSetting('pitch', voicePitch.value, voicePitchValue);
+    });
+    voiceVolume.addEventListener('input', () => {
+        updateVoiceSetting('volume', voiceVolume.value, voiceVolumeValue);
+    });
+    
+    voiceAge.addEventListener('input', () => {
+        const val = parseFloat(voiceAge.value);
+        voiceSettings.age = val;
+        saveVoiceSettings();
+        
+        if (val < -0.3) {
+            voiceAgeValue.textContent = '🧒 Молодой';
+            voiceAgeValue.style.color = '#7ec8e3';
+        } else if (val > 0.3) {
+            voiceAgeValue.textContent = '👴 Взрослый';
+            voiceAgeValue.style.color = '#d4a574';
+        } else {
+            voiceAgeValue.textContent = '⚖️ Нейтральный';
+            voiceAgeValue.style.color = '#ffd700';
+        }
+    });
+
+    function applyVoiceSettingsToUI() {
+        voiceRate.value = voiceSettings.rate || 0.85;
+        voiceRateValue.textContent = (voiceSettings.rate || 0.85).toFixed(2);
+        voicePitch.value = voiceSettings.pitch || 0.95;
+        voicePitchValue.textContent = (voiceSettings.pitch || 0.95).toFixed(2);
+        voiceVolume.value = voiceSettings.volume || 1.0;
+        voiceVolumeValue.textContent = (voiceSettings.volume || 1.0).toFixed(2);
+        
+        const ageVal = voiceSettings.age !== undefined ? voiceSettings.age : 0.0;
+        voiceAge.value = ageVal;
+        if (ageVal < -0.3) {
+            voiceAgeValue.textContent = '🧒 Молодой';
+            voiceAgeValue.style.color = '#7ec8e3';
+        } else if (ageVal > 0.3) {
+            voiceAgeValue.textContent = '👴 Взрослый';
+            voiceAgeValue.style.color = '#d4a574';
+        } else {
+            voiceAgeValue.textContent = '⚖️ Нейтральный';
+            voiceAgeValue.style.color = '#ffd700';
+        }
+    }
+    applyVoiceSettingsToUI();
+
+    voiceSelectorSettings.addEventListener('change', () => {
+        const selectedValue = voiceSelectorSettings.value;
+        if (selectedValue === 'default') {
+            selectedVoice = null;
+            voiceSettings.voiceName = 'default';
+            showToast('🎙️ Автоматический выбор мужского голоса', 'info');
+        } else {
+            const voice = getVoiceByName(availableVoices, selectedValue);
+            if (voice) {
+                selectedVoice = voice;
+                voiceSettings.voiceName = selectedValue;
+                showToast(`🎙️ Выбран голос: ${voice.name}`, 'success');
+                setTimeout(() => speakText("Выбран этот голос для Дмитрия Менделеева."), 300);
+            }
+        }
+        saveVoiceSettings();
+    });
+
+    voiceTestBtnSettings.addEventListener('click', testVoice);
+
+    voiceResetBtn.addEventListener('click', () => {
+        voiceSettings = { rate: 0.85, pitch: 0.95, volume: 1.0, age: 0.0, voiceName: 'default' };
+        applyVoiceSettingsToUI();
+        voiceSelectorSettings.value = 'default';
+        selectedVoice = null;
+        saveVoiceSettings();
+        showToast('🔄 Настройки голоса сброшены', 'info');
+        setTimeout(() => speakText("Настройки голоса сброшены до стандартных."), 300);
+    });
+
+    voiceToggle.addEventListener('click', () => {
+        isTTSEnabled = !isTTSEnabled;
+        localStorage.setItem('mendeleev_tts_enabled', String(isTTSEnabled));
+        voiceToggleLabel.textContent = isTTSEnabled ? 'Озвучка' : '🔇';
+        showToast(isTTSEnabled ? '🔊 Озвучка включена' : '🔇 Озвучка выключена', 'info');
+        if (!isTTSEnabled) {
+            window.speechSynthesis.cancel();
+        }
+    });
+
+    // ======================== API КЛЮЧ ========================
+    if (apiKeyInput) {
+        apiKeyInput.value = currentApiKey || '';
+        apiKeyInput.placeholder = 'Введите API ключ...';
+    }
+    apiSaveBtn.addEventListener('click', () => {
+        const key = apiKeyInput.value.trim();
+        if (key) {
+            localStorage.setItem(API_KEY_STORAGE, key);
+            currentApiKey = key;
+            apiStatus.innerHTML = '<i class="fas fa-check-circle" style="color:#00677e;"></i> API: ключ сохранён';
+            showToast('✅ API ключ сохранён!', 'success');
+        } else {
+            showToast('❌ Введите API ключ', 'error');
+        }
+    });
+
+    // ======================== TOAST ========================
+    function showToast(msg, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast-notification toast-${type}`;
+        toast.textContent = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => { if (toast.parentNode) toast.remove(); }, 3500);
+    }
+
+    // ======================== API ЗАПРОС ========================
+    async function askBot(userMessage) {
+        if (!currentApiKey) throw new Error('API_KEY_MISSING');
+        
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${currentApiKey}`
+            },
+            body: JSON.stringify({
+                model: MODEL,
+                messages: [
+                    { role: "system", content: getSystemPrompt() },
+                    ...messageHistory,
+                    { role: "user", content: userMessage }
+                ],
+                max_tokens: 500,
+                temperature: 0.8
+            })
+        });
+
+        if (!response.ok) {
+            if (response.status === 401) throw new Error('API_KEY_INVALID');
+            if (response.status === 429) throw new Error('RATE_LIMIT');
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        const reply = data?.choices?.[0]?.message?.content;
+        if (!reply || reply.trim() === '') throw new Error('NO_TEXT');
+        return reply.replace(/\*\*(.*?)\*\*/g, '$1')
+                    .replace(/\*(.*?)\*/g, '$1')
+                    .replace(/__(.*?)__/g, '$1')
+                    .replace(/_(.*?)_/g, '$1');
+    }
+
+    // ======================== UI ФУНКЦИИ ========================
+    function addMessage(text, isUser = false, returnElement = false) {
+        const div = document.createElement('div');
+        div.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+        if (isUser) div.dataset.type = 'user';
+        else div.dataset.type = 'bot';
+        
+        const nameSpan = document.createElement('div');
+        nameSpan.className = 'msg-name';
+        nameSpan.innerText = isUser ? 'Вы' : getBotName();
+        
+        const bubble = document.createElement('div');
+        bubble.className = 'msg-bubble';
+        bubble.innerText = text;
+        
+        div.appendChild(nameSpan);
+        div.appendChild(bubble);
+        
+        const actions = document.createElement('div');
+        actions.className = 'message-actions';
+        
+        if (isUser) {
+            const editBtn = document.createElement('button');
+            editBtn.className = 'edit-btn';
+            editBtn.innerHTML = '<i class="fas fa-pen"></i>';
+            editBtn.title = 'Редактировать';
+            editBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                startEditing(div, text);
+            });
+            actions.appendChild(editBtn);
+            
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-btn';
+            copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
+            copyBtn.title = 'Копировать';
+            copyBtn.addEventListener('click', () => {
+                navigator.clipboard.writeText(text);
+                showToast('📋 Скопировано!', 'success');
+            });
+            actions.appendChild(copyBtn);
+            
+            const delBtn = document.createElement('button');
+            delBtn.className = 'delete-btn';
+            delBtn.innerHTML = '<i class="fas fa-trash"></i>';
+            delBtn.title = 'Удалить';
+            delBtn.addEventListener('click', () => {
+                div.remove();
+                const index = messageHistory.findIndex(m => m.content === text && m.role === 'user');
+                if (index !== -1) messageHistory.splice(index, 1);
+                showToast('🗑️ Сообщение удалено', 'info');
+            });
+            actions.appendChild(delBtn);
+        } else {
+            const regenBtn = document.createElement('button');
+            regenBtn.className = 'regenerate-btn';
+            regenBtn.innerHTML = '🔄 Перегенерировать';
+            regenBtn.title = 'Новый ответ';
+            regenBtn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                await regenerateReply(div);
+            });
+            actions.appendChild(regenBtn);
+            
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-btn';
+            copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
+            copyBtn.title = 'Копировать';
+            copyBtn.addEventListener('click', () => {
+                navigator.clipboard.writeText(text);
+                showToast('📋 Скопировано!', 'success');
+            });
+            actions.appendChild(copyBtn);
+        }
+        
+        div.appendChild(actions);
+        chatMessages.appendChild(div);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        if (!isEditing) {
+            messageHistory.push({ role: isUser ? 'user' : 'assistant', content: text });
+            if (messageHistory.length > 30) messageHistory = messageHistory.slice(-30);
+        }
+        
+        if (returnElement) return div;
+        return null;
+    }
+
+    // ======================== РЕДАКТИРОВАНИЕ ========================
+    function startEditing(messageElement, originalText) {
+        if (isEditing) return;
+        isEditing = true;
+        editingMessageElement = messageElement;
+        
+        const bubble = messageElement.querySelector('.msg-bubble');
+        bubble.contentEditable = true;
+        bubble.focus();
+        bubble.classList.add('edit-mode');
+        
+        const range = document.createRange();
+        range.selectNodeContents(bubble);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        
+        const onSave = async () => {
+            const newText = bubble.innerText.trim();
+            if (newText && newText !== originalText) {
+                const index = messageHistory.findIndex(m => m.content === originalText && m.role === 'user');
+                if (index !== -1) messageHistory[index].content = newText;
+                
+                let removeNext = false;
+                let foundUser = false;
+                for (const el of chatMessages.children) {
+                    if (el === messageElement) { foundUser = true; removeNext = true; continue; }
+                    if (foundUser && removeNext && el.dataset.type === 'bot') {
+                        el.remove();
+                        const msgIndex = messageHistory.findIndex(m => m.content === el.querySelector('.msg-bubble').innerText && m.role === 'assistant');
+                        if (msgIndex !== -1) messageHistory.splice(msgIndex, 1);
+                    }
+                    if (foundUser && el.dataset.type === 'user') { removeNext = false; break; }
+                }
+                bubble.innerText = newText;
+                isWaiting = true;
+                showTyping();
+                mendeleevIcon.classList.add('thinking');
+                try {
+                    const reply = await askBot(newText);
+                    hideTyping();
+                    mendeleevIcon.classList.remove('thinking');
+                    addMessage(reply, false);
+                    speakText(reply);
+                } catch (error) {
+                    hideTyping();
+                    mendeleevIcon.classList.remove('thinking');
+                    showToast('❌ Ошибка: ' + error.message, 'error');
+                }
+                isWaiting = false;
+            }
+            bubble.contentEditable = false;
+            bubble.classList.remove('edit-mode');
+            isEditing = false;
+            editingMessageElement = null;
+        };
+        
+        bubble.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); onSave(); }
+            if (e.key === 'Escape') {
+                bubble.innerText = originalText;
+                bubble.contentEditable = false;
+                bubble.classList.remove('edit-mode');
+                isEditing = false;
+                editingMessageElement = null;
+            }
+        });
+    }
+
+    // ======================== РЕГЕНЕРАЦИЯ ========================
+    async function regenerateReply(botMessageElement) {
+        if (isWaiting) return;
+        if (!lastUserMessage) {
+            showToast('❌ Нет сообщения для регенерации', 'error');
+            return;
+        }
+        
+        const bubble = botMessageElement.querySelector('.msg-bubble');
+        const oldText = bubble.innerText;
+        botMessageElement.remove();
+        
+        const index = messageHistory.findIndex(m => m.content === oldText && m.role === 'assistant');
+        if (index !== -1) messageHistory.splice(index, 1);
+        
+        isWaiting = true;
+        showTyping();
+        mendeleevIcon.classList.add('thinking');
+        
+        try {
+            const reply = await askBot(lastUserMessage);
+            hideTyping();
+            mendeleevIcon.classList.remove('thinking');
+            const newEl = addMessage(reply, false, true);
+            lastBotMessageElement = newEl;
+            speakText(reply);
+        } catch (error) {
+            hideTyping();
+            mendeleevIcon.classList.remove('thinking');
+            showToast('❌ Ошибка регенерации: ' + error.message, 'error');
+            addMessage(oldText, false);
+        }
+        isWaiting = false;
+    }
+
+    // ======================== ПОКАЗАТЬ ПЕЧАТАНИЕ ========================
+    function showTyping() {
+        if (typingDiv) typingDiv.style.display = 'block';
+        if (mendeleevIcon) mendeleevIcon.classList.add('thinking');
+    }
+    function hideTyping() {
+        if (typingDiv) typingDiv.style.display = 'none';
+        if (mendeleevIcon) mendeleevIcon.classList.remove('thinking');
+    }
+
+    // ======================== СБРОС ДИАЛОГА ========================
+    function resetChat() {
+        if (confirm('🔄 Начать новый диалог? Вся история будет очищена.')) {
+            if (isListening) {
+                try {
+                    recognition.stop();
+                    if (mediaStream) {
+                        mediaStream.getTracks().forEach(track => track.stop());
+                        mediaStream = null;
+                    }
+                } catch (e) {}
+                resetVoiceUI();
+            }
+            
+            messageHistory = [];
+            chatMessages.innerHTML = '';
+            
+            const randomGreeting = GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
+            addMessage(randomGreeting, false);
+            lastUserMessage = '';
+            
+            showToast('🔄 Новый диалог начат!', 'success');
+        }
+    }
+
+    // ======================== ОТПРАВКА ========================
+    async function sendMessage() {
+        const text = userInput.value.trim();
+        if (!text || isWaiting) return;
+        if (!currentApiKey) {
+            showToast('❌ API-ключ не найден', 'error');
+            return;
+        }
+        
+        lastUserMessage = text;
+        addMessage(text, true);
+        userInput.value = '';
+        isWaiting = true;
+        showTyping();
+        
+        try {
+            const reply = await askBot(text);
+            hideTyping();
+            const el = addMessage(reply, false, true);
+            lastBotMessageElement = el;
+            speakText(reply);
+        } catch (error) {
+            hideTyping();
+            console.error(error);
+            let errorMsg = error.message === 'API_KEY_MISSING' ? '❌ API-ключ не найден' :
+                          error.message === 'API_KEY_INVALID' ? '❌ Неверный API-ключ' :
+                          error.message === 'RATE_LIMIT' ? '⏰ Слишком много запросов' :
+                          '⚠️ Ошибка: ' + error.message;
+            addMessage(errorMsg, false);
+        }
+        isWaiting = false;
+    }
+
+    // ======================== ОЧИСТКА ========================
+    function clearChat() {
+        if (confirm('🗑️ Очистить всю историю чата?')) {
+            messageHistory = [];
+            chatMessages.innerHTML = '';
+            const randomGreeting = GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
+            addMessage(randomGreeting, false);
+            lastUserMessage = '';
+            showToast('🧹 Чат очищен', 'info');
+        }
+    }
+
+    // ======================== ЭКСПОРТ ========================
+    function exportChat() {
+        const messages = chatMessages.querySelectorAll('.message');
+        let text = `Чат с ${getBotName()}\n`;
+        text += `Дата: ${new Date().toLocaleString()}\n`;
+        text += '='.repeat(50) + '\n\n';
+        messages.forEach(msg => {
+            const name = msg.querySelector('.msg-name')?.innerText || '';
+            const bubble = msg.querySelector('.msg-bubble')?.innerText || '';
+            text += `${name}: ${bubble}\n\n`;
+        });
+        const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `chat_${getBotName()}_${new Date().toISOString().slice(0,10)}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('📥 Чат экспортирован!', 'success');
+    }
+
+    // ======================== ГОЛОСОВОЙ ВВОД ========================
+    let recognition = null;
+    let isListening = false;
+    let autoSendAfterVoice = true;
+    let mediaStream = null;
+    let voiceTimeout = null;
+
+    function initSpeechRecognition() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            if (voiceBtn) {
+                voiceBtn.disabled = true;
+                voiceBtn.title = 'Ваш браузер не поддерживает голосовой ввод';
+                voiceBtn.style.opacity = '0.5';
+                voiceBtn.style.cursor = 'not-allowed';
+            }
+            showToast('❌ Голосовой ввод не поддерживается', 'error');
+            return null;
+        }
+        try {
+            const recog = new SpeechRecognition();
+            recog.continuous = false;
+            recog.interimResults = true;
+            recog.lang = 'ru-RU';
+            recog.maxAlternatives = 1;
+            return recog;
+        } catch (e) {
+            showToast('❌ Ошибка инициализации: ' + e.message, 'error');
+            return null;
+        }
+    }
+
+    async function startVoiceInput() {
+        if (isWaiting) {
+            showToast('⏳ Дождитесь ответа персонажа', 'error');
+            return;
+        }
+        if (!currentApiKey) {
+            showToast('🔑 Сначала сохраните API-ключ', 'error');
+            return;
+        }
+        if (!recognition) {
+            showToast('❌ Голосовой ввод не поддерживается', 'error');
+            return;
+        }
+        
+        if (isListening) {
+            try {
+                recognition.stop();
+                if (mediaStream) {
+                    mediaStream.getTracks().forEach(track => track.stop());
+                    mediaStream = null;
+                }
+            } catch (e) {}
+            resetVoiceUI();
+            return;
+        }
+        
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                audio: { 
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    autoGainControl: true
+                } 
+            });
+            mediaStream = stream;
+            
+            recognition.start();
+            isListening = true;
+            if (voiceBtn) voiceBtn.classList.add('listening');
+            if (micIcon) micIcon.className = 'fa-solid fa-microphone-slash';
+            showToast('🎙️ Слушаю... Говорите', 'info');
+            userInput.placeholder = '🎙️ Слушаю...';
+            
+        } catch (error) {
+            console.error('Ошибка доступа к микрофону:', error);
+            
+            if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+                showToast('❌ Доступ к микрофону запрещён. Разрешите доступ в настройках браузера.', 'error');
+            } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+                showToast('❌ Микрофон не найден. Подключите микрофон.', 'error');
+            } else {
+                showToast('❌ Ошибка: ' + error.message, 'error');
+            }
+            resetVoiceUI();
+        }
+    }
+
+    function resetVoiceUI() {
+        isListening = false;
+        if (voiceBtn) voiceBtn.classList.remove('listening');
+        if (micIcon) micIcon.className = 'fas fa-microphone';
+        userInput.placeholder = 'Спросите Менделеева о химии, элементах...';
+        
+        if (voiceTimeout) {
+            clearTimeout(voiceTimeout);
+            voiceTimeout = null;
+        }
+        
+        if (mediaStream) {
+            mediaStream.getTracks().forEach(track => track.stop());
+            mediaStream = null;
+        }
+    }
+
+    function setupVoiceEvents(recogInstance) {
+        if (!recogInstance) return;
+        
+        let finalTranscript = '';
+        
+        recogInstance.onresult = (event) => {
+            let interimTranscript = '';
+            finalTranscript = '';
+            
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const transcript = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    finalTranscript += transcript;
+                } else {
+                    interimTranscript += transcript;
+                }
+            }
+            
+            if (interimTranscript) {
+                userInput.value = interimTranscript;
+            }
+            
+            if (finalTranscript.trim() !== '') {
+                userInput.value = finalTranscript.trim();
+                showToast(`🔊 Распознано: "${finalTranscript.trim()}"`, 'success');
+                
+                if (autoSendAfterVoice) {
+                    if (voiceTimeout) clearTimeout(voiceTimeout);
+                    voiceTimeout = setTimeout(() => {
+                        if (userInput.value.trim()) {
+                            sendMessage();
+                        }
+                    }, 500);
+                }
+                
+                try { 
+                    recogInstance.stop(); 
+                    if (mediaStream) {
+                        mediaStream.getTracks().forEach(track => track.stop());
+                        mediaStream = null;
+                    }
+                } catch (e) {}
+            }
+        };
+        
+        recogInstance.onerror = (event) => {
+            console.error('Ошибка распознавания:', event.error);
+            
+            if (event.error === 'no-speech') {
+                showToast('⏰ Речь не распознана. Попробуйте ещё раз.', 'error');
+            } else if (event.error === 'audio-capture') {
+                showToast('❌ Ошибка захвата аудио', 'error');
+            } else if (event.error === 'not-allowed') {
+                showToast('❌ Доступ к микрофону запрещён', 'error');
+            } else if (event.error === 'aborted') {
+                // Пользователь прервал запись
+            } else {
+                showToast(`❌ Ошибка: ${event.error}`, 'error');
+            }
+            resetVoiceUI();
+        };
+        
+        recogInstance.onend = () => {
+            voiceTimeout = setTimeout(() => {
+                if (isListening) {
+                    resetVoiceUI();
+                }
+            }, 500);
+        };
+        
+        recogInstance.onspeechstart = () => {
+            showToast('🎙️ Распознаю речь...', 'info');
+        };
+    }
+
+    // ======================== ИНИЦИАЛИЗАЦИЯ ========================
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!currentApiKey) {
+            apiStatus.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:#e06050;"></i> API: ключ не найден';
+        }
+        
+        messageHistory = [];
+        chatMessages.innerHTML = '';
+        
+        const randomGreeting = GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
+        addMessage(randomGreeting, false);
+        
+        console.log('✅ Новый диалог начат! (автосброс при загрузке)');
+        console.log('📚 Используемые источники:');
+        console.log('  - https://ru.wikipedia.org/wiki/Менделеев,_Дмитрий_Иванович');
+        console.log('  - https://bfnm.ru/index.php/o-d-i-mendeleeve');
+        console.log('  - https://www.vniim.ru/mendeleev.html');
+        console.log('  - https://www.muctr.ru/university/about/history/mendeleev/');
+        console.log('  - https://diletant.media/articles/43989219/');
+        console.log('🧪 Принцип историзма: Менделеев отвечает в рамках научных представлений 1890-1900-х годов');
+        
+        const recognitionReady = initSpeechRecognition();
+        if (recognitionReady) {
+            recognition = recognitionReady;
+            setupVoiceEvents(recognition);
+            if (voiceBtn) {
+                voiceBtn.addEventListener('click', startVoiceInput);
+                voiceBtn.style.cursor = 'pointer';
+            }
+        }
+        
+        function loadVoicesAndPopulate() {
+            const voices = speechSynthesis.getVoices();
+            if (voices && voices.length > 0) {
+                populateVoiceSelector(voices);
+            }
+        }
+        
+        if (window.speechSynthesis) {
+            if (speechSynthesis.getVoices().length > 0) {
+                loadVoicesAndPopulate();
+            } else {
+                speechSynthesis.onvoiceschanged = loadVoicesAndPopulate;
+                setTimeout(loadVoicesAndPopulate, 2000);
+            }
+        }
+        
+        if (sendBtn) sendBtn.addEventListener('click', sendMessage);
+        if (resetBtn) resetBtn.addEventListener('click', resetChat);
+        if (userInput) userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+        if (clearBtn) clearBtn.addEventListener('click', clearChat);
+        if (exportBtn) exportBtn.addEventListener('click', exportChat);
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && isListening) {
+                try { 
+                    recognition.stop(); 
+                    if (mediaStream) {
+                        mediaStream.getTracks().forEach(track => track.stop());
+                        mediaStream = null;
+                    }
+                } catch (err) {}
+                resetVoiceUI();
+                showToast('⏹️ Запись остановлена', 'info');
+            }
+            if (e.key === 'Escape' && isEditing) {
+                if (editingMessageElement) {
+                    const bubble = editingMessageElement.querySelector('.msg-bubble');
+                    bubble.contentEditable = false;
+                    bubble.classList.remove('edit-mode');
+                }
+                isEditing = false;
+                editingMessageElement = null;
+            }
+        });
+        
+        console.log('🧪 Периодическая таблица Менделеева — основа современной химии');
+        console.log('🔄 Диалог автоматически сбрасывается при каждом открытии файла');
+        console.log('🎤 Голосовой ввод: нажмите на микрофон и скажите что-нибудь');
+        console.log('🧓 Ползунок "Возраст" позволяет сделать голос более молодым или взрослым');
+    });
+    </script>
+</body>
+</html>
